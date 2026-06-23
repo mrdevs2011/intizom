@@ -11,22 +11,28 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#080808;--bg2:#111;--bg3:#181818;--bg4:#222;--bg5:#2a2a2a;
-  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);--border3:rgba(255,255,255,0.18);
-  --text:#efefef;--text2:#888;--text3:#444;--text4:#2a2a2a;
-  --green:#1D9E75;--green2:rgba(29,158,117,0.12);--green3:rgba(29,158,117,0.06);--teal:#4DBFA0;
-  --amber:#E8A020;--amber2:rgba(232,160,32,0.1);
-  --red:#D94545;--red2:rgba(217,69,69,0.1);
-  --blue:#3A7BD5;--blue2:rgba(58,123,213,0.12);
-  --purple:#9B72CF;--purple2:rgba(155,114,207,0.1);
+  --bg:#1c1c1c;--bg2:#242424;--bg3:#2c2c2c;--bg4:#353535;--bg5:#3d3d3d;
+  --sidebar-bg:#202020;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--border3:rgba(255,255,255,0.22);
+  --text:#e8e8e8;--text2:#909090;--text3:#5a5a5a;--text4:#3a3a3a;
+  --green:#1D9E75;--green2:rgba(29,158,117,0.14);--green3:rgba(29,158,117,0.07);--teal:#4DBFA0;
+  --amber:#E8A020;--amber2:rgba(232,160,32,0.12);
+  --red:#D94545;--red2:rgba(217,69,69,0.12);
+  --blue:#3A7BD5;--blue2:rgba(58,123,213,0.14);
+  --purple:#9B72CF;--purple2:rgba(155,114,207,0.12);
   --radius:14px;--radius-sm:10px;--radius-xs:7px;
   --font:'Onest',sans-serif;--mono:'JetBrains Mono',monospace;
+  --sidebar-w:220px;
 }
 body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;-webkit-font-smoothing:antialiased;}
-.app{max-width:500px;margin:0 auto;padding:0 0 90px;}
 
-/* === NAV === */
-.top-nav{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 0;margin-bottom:20px;gap:10px;}
+/* =============================================
+   MOBILE LAYOUT (default)
+   ============================================= */
+.app{max-width:500px;margin:0 auto;padding:0 0 80px;}
+
+/* Mobile top bar — just brand */
+.top-nav{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 0;margin-bottom:16px;}
 .nav-brand{display:flex;align-items:center;gap:9px;flex-shrink:0;}
 .brand-logo{width:28px;height:28px;flex-shrink:0;}
 .brand-name{font-size:15px;font-weight:800;color:var(--text);letter-spacing:-0.02em;}
@@ -35,14 +41,185 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.8);}}
 .status-offline{background:var(--red)!important;animation:none!important;}
 .status-label{font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:0.04em;}
-.nav-tabs{display:flex;background:var(--bg3);border-radius:10px;padding:3px;gap:2px;border:0.5px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
-.nav-tabs::-webkit-scrollbar{display:none;}
-.nav-tab{padding:6px 10px;border-radius:8px;font-size:10px;font-weight:700;color:var(--text3);cursor:pointer;transition:all 0.2s;border:none;background:none;font-family:var(--font);letter-spacing:0.02em;white-space:nowrap;flex-shrink:0;}
-.nav-tab.active{background:var(--bg5);color:var(--text);border:0.5px solid var(--border2);}
 
-/* === PAGES === */
+/* Mobile: top nav-tabs hidden, bottom bar is used */
+.nav-tabs{display:none;}
+.nav-tab{display:none;}
+
+/* Mobile bottom nav bar */
+.mobile-bottom-nav{
+  display:flex;
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--bg2);
+  border-top:0.5px solid var(--border2);
+  z-index:100;
+  padding:6px 0 env(safe-area-inset-bottom, 6px);
+}
+.mob-nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:6px 4px;cursor:pointer;
+  font-size:9px;font-weight:700;color:var(--text3);
+  letter-spacing:0.04em;text-transform:uppercase;
+  background:none;border:none;font-family:var(--font);
+  transition:color 0.18s;
+}
+.mob-nav-item svg{width:18px;height:18px;opacity:0.4;transition:opacity 0.18s;}
+.mob-nav-item.active{color:var(--green);}
+.mob-nav-item.active svg{opacity:1;color:var(--green);}
+/* "more" dropdown */
+.mob-more-sheet{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:var(--bg2);border-top:0.5px solid var(--border2);
+  padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 70px);
+  z-index:99;border-radius:16px 16px 0 0;
+}
+.mob-more-sheet.open{display:block;}
+.mob-more-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.mob-more-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;padding:12px 6px;background:var(--bg3);border-radius:12px;
+  border:0.5px solid var(--border);cursor:pointer;font-size:10px;font-weight:700;
+  color:var(--text3);font-family:var(--font);text-transform:uppercase;letter-spacing:0.04em;
+}
+.mob-more-btn svg{width:18px;height:18px;}
+.mob-more-btn.active{background:var(--green2);border-color:rgba(29,158,117,0.35);color:var(--green);}
+.mob-more-overlay{display:none;position:fixed;inset:0;z-index:98;background:rgba(0,0,0,0.5);}
+.mob-more-overlay.open{display:block;}
+
+/* desktop-main is transparent on mobile */
+.desktop-main{display:contents;}
+.desktop-topbar{display:none;}
+.sidebar-toggle{display:none;}
+
+/* === PAGES — mobile === */
 .page{display:none;padding:0 18px;}
 .page.active{display:block;}
+
+/* =============================================
+   DESKTOP LAYOUT (≥900px)
+   ============================================= */
+@media(min-width:900px){
+
+  /* Reset mobile bottom nav */
+  .mobile-bottom-nav,.mob-more-sheet,.mob-more-overlay{display:none!important;}
+
+  body{overflow:hidden;height:100vh;}
+
+  .app{
+    max-width:none;width:100%;height:100vh;
+    padding:0;margin:0;
+    display:flex;flex-direction:row;
+    overflow:hidden;
+  }
+
+  /* ---- SIDEBAR ---- */
+  .top-nav{
+    flex-direction:column;align-items:stretch;
+    padding:0;margin-bottom:0;
+    border-right:0.5px solid var(--border);
+    background:var(--sidebar-bg);
+    height:100vh;
+    width:220px;
+    overflow:hidden;
+    transition:width 0.22s cubic-bezier(0.4,0,0.2,1);
+    flex-shrink:0;
+  }
+  /* Collapsed: only icons (48px) */
+  .top-nav.collapsed{width:48px;}
+
+  /* Brand area */
+  .nav-brand{
+    padding:16px 12px 14px;
+    border-bottom:0.5px solid var(--border);
+    margin-bottom:8px;
+    flex-direction:row;align-items:center;gap:10px;
+    overflow:hidden;min-width:0;
+    flex-shrink:0;
+  }
+  .brand-logo{flex-shrink:0;}
+  .brand-name{font-size:14px;font-weight:700;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;transition:opacity 0.15s,max-width 0.22s;max-width:160px;}
+  .brand-status{flex-shrink:0;gap:6px;transition:opacity 0.15s,max-width 0.22s;max-width:80px;overflow:hidden;}
+  .top-nav.collapsed .brand-name{max-width:0;opacity:0;}
+  .top-nav.collapsed .brand-status{max-width:0;opacity:0;}
+
+  /* Nav tabs */
+  .nav-tabs{
+    display:flex;flex-direction:column;
+    background:none;border-radius:0;
+    padding:4px 6px 20px;
+    gap:2px;border:none;overflow:visible;
+  }
+  .nav-tab{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 10px;border-radius:9px;
+    font-size:12px;font-weight:600;
+    color:var(--text3);letter-spacing:0.005em;
+    text-align:left;white-space:nowrap;
+    background:none;border:none;cursor:pointer;
+    font-family:var(--font);
+    transition:background 0.15s,color 0.15s;
+    overflow:hidden;min-width:0;
+  }
+  .nav-tab .tab-icon{
+    width:16px;height:16px;flex-shrink:0;opacity:0.4;transition:opacity 0.15s;
+  }
+  .nav-tab .tab-label{
+    white-space:nowrap;overflow:hidden;
+    transition:opacity 0.12s,max-width 0.22s;
+    max-width:160px;
+  }
+  /* Collapsed: hide label */
+  .top-nav.collapsed .nav-tab .tab-label{max-width:0;opacity:0;}
+  .top-nav.collapsed .nav-tab{padding:9px 0;justify-content:center;gap:0;}
+
+  .nav-tab:hover{background:var(--bg3);color:var(--text2);}
+  .nav-tab:hover .tab-icon{opacity:0.8;}
+  .nav-tab.active{background:var(--green2);color:var(--green);}
+  .nav-tab.active .tab-icon{opacity:1;color:var(--green);}
+  .nav-tab::before{content:none!important;}
+
+  /* Sidebar toggle button */
+  .sidebar-toggle{
+    display:flex;align-items:center;justify-content:center;
+    width:32px;height:32px;border-radius:8px;
+    background:var(--bg3);border:0.5px solid var(--border2);
+    cursor:pointer;color:var(--text2);flex-shrink:0;
+    transition:background 0.15s,color 0.15s;
+  }
+  .sidebar-toggle:hover{background:var(--bg4);color:var(--text);}
+  .sidebar-toggle svg{width:16px;height:16px;}
+
+  /* Desktop top bar */
+  .desktop-topbar{
+    display:flex;align-items:center;gap:12px;
+    padding:0 0 20px;
+    border-bottom:0.5px solid var(--border);
+    margin-bottom:24px;
+    flex-shrink:0;
+  }
+  .desktop-page-title{
+    font-size:18px;font-weight:800;color:var(--text);letter-spacing:-0.02em;flex:1;
+  }
+
+  /* Main content area */
+  .desktop-main{
+    display:flex;flex-direction:column;
+    flex:1;min-width:0;
+    height:100vh;overflow-y:auto;
+    padding:28px 36px;
+  }
+
+  .page{display:none;padding:0;max-width:900px;width:100%;}
+  .page.active{display:block;}
+
+  .stats-mini{grid-template-columns:repeat(3,1fr);}
+  .stats-big-grid{grid-template-columns:repeat(4,1fr);}
+  .namoz-grid{grid-template-columns:repeat(5,1fr);}
+}
+
+@media(min-width:1300px){
+  .desktop-main{padding:32px 48px;}
+}
 
 /* === CONNECTION BANNER === */
 .conn-banner{background:var(--red2);border:0.5px solid rgba(217,69,69,0.3);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:14px;display:none;align-items:center;gap:10px;}
@@ -389,51 +566,109 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
       </div>
     </div>
     <div class="nav-tabs">
-      <button class="nav-tab active" id="tab-today" onclick="APP.showPage('today')">Bugun</button>
-      <button class="nav-tab" id="tab-debt" onclick="APP.showPage('debt')">Qarz</button>
-      <button class="nav-tab" id="tab-weekly" onclick="APP.showPage('weekly')">Hafta</button>
-      <button class="nav-tab" id="tab-journal" onclick="APP.showPage('journal')">Jurnal</button>
-      <button class="nav-tab" id="tab-stats" onclick="APP.showPage('stats')">Statistika</button>
-      <button class="nav-tab" id="tab-calendar" onclick="APP.showPage('calendar')">Kalendar</button>
-      <button class="nav-tab" id="tab-help" onclick="APP.showPage('help')">Namoz</button>
-      <button class="nav-tab" id="tab-andoza" onclick="APP.showPage('andoza')">Andoza</button>
+      <button class="nav-tab active" id="tab-today" data-icon="☀️" onclick="APP.showPage('today')">Bugun</button>
+      <button class="nav-tab" id="tab-debt" data-icon="⚠️" onclick="APP.showPage('debt')">Qarz</button>
+      <button class="nav-tab" id="tab-weekly" data-icon="📊" onclick="APP.showPage('weekly')">Hafta</button>
+      <button class="nav-tab" id="tab-journal" data-icon="📓" onclick="APP.showPage('journal')">Jurnal</button>
+      <button class="nav-tab" id="tab-stats" data-icon="📈" onclick="APP.showPage('stats')">Statistika</button>
+      <button class="nav-tab" id="tab-calendar" data-icon="📅" onclick="APP.showPage('calendar')">Kalendar</button>
+      <button class="nav-tab" id="tab-help" data-icon="🕌" onclick="APP.showPage('help')">Namoz vaqtlari</button>
+      <button class="nav-tab" id="tab-andoza" data-icon="🗓" onclick="APP.showPage('andoza')">Andoza</button>
     </div>
   </div>
 
-  <div class="page active" id="page-today">
-    <div id="connBanner" class="conn-banner">
-      <div><div class="conn-banner-text">Ulanish yo'q</div><div class="conn-banner-sub">Ma'lumotlar saqlanmayapti</div></div>
-      <button class="reconnect-btn" onclick="APP.reconnect()">Qayta ulash</button>
+  <!-- Desktop: pages go inside this scrollable container -->
+  <div class="desktop-main" id="desktopMain">
+    <div class="desktop-topbar" id="desktopTopbar">
+      <button class="sidebar-toggle" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <span class="desktop-page-title" id="desktopPageTitle">Bugun</span>
     </div>
-    <div id="todayContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
-  </div>
 
-  <div class="page" id="page-debt">
-    <div id="debtContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
-  </div>
+    <div class="page active" id="page-today">
+      <div id="connBanner" class="conn-banner">
+        <div><div class="conn-banner-text">Ulanish yo'q</div><div class="conn-banner-sub">Ma'lumotlar saqlanmayapti</div></div>
+        <button class="reconnect-btn" onclick="APP.reconnect()">Qayta ulash</button>
+      </div>
+      <div id="todayContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+    </div>
 
-  <div class="page" id="page-weekly">
-    <div id="weeklyContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
-  </div>
+    <div class="page" id="page-debt">
+      <div id="debtContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+    </div>
 
-  <div class="page" id="page-journal">
-    <div id="journalContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
-  </div>
+    <div class="page" id="page-weekly">
+      <div id="weeklyContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+    </div>
 
-  <div class="page" id="page-stats">
-    <div id="statsContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
-  </div>
+    <div class="page" id="page-journal">
+      <div id="journalContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+    </div>
 
-  <div class="page" id="page-calendar">
-    <div id="calContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
-  </div>
+    <div class="page" id="page-stats">
+      <div id="statsContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+    </div>
 
-  <div class="page" id="page-andoza">
-    <div id="andozaContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
-  </div>
+    <div class="page" id="page-calendar">
+      <div id="calContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+    </div>
 
-  <div class="page" id="page-help">
-    <div id="helpContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+    <div class="page" id="page-andoza">
+      <div id="andozaContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+    </div>
+
+    <div class="page" id="page-help">
+      <div id="helpContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+    </div>
+  </div><!-- /desktop-main -->
+
+</div><!-- /app -->
+
+<!-- Mobile bottom nav -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+  <button class="mob-nav-item active" data-page="today" onclick="APP.showPage('today')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    Bugun
+  </button>
+  <button class="mob-nav-item" data-page="debt" onclick="APP.showPage('debt')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Qarz
+  </button>
+  <button class="mob-nav-item" data-page="weekly" onclick="APP.showPage('weekly')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    Hafta
+  </button>
+  <button class="mob-nav-item" data-page="stats" onclick="APP.showPage('stats')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Stats
+  </button>
+  <button class="mob-nav-item" data-page="__more__" onclick="toggleMobMore()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
+    Ko'proq
+  </button>
+</nav>
+
+<!-- Mobile "more" sheet -->
+<div class="mob-more-overlay" id="mobMoreOverlay" onclick="closeMobMore()"></div>
+<div class="mob-more-sheet" id="mobMoreSheet">
+  <div class="mob-more-grid">
+    <button class="mob-more-btn" data-page="journal" onclick="APP.showPage('journal');closeMobMore()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      Jurnal
+    </button>
+    <button class="mob-more-btn" data-page="calendar" onclick="APP.showPage('calendar');closeMobMore()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Kalendar
+    </button>
+    <button class="mob-more-btn" data-page="help" onclick="APP.showPage('help');closeMobMore()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Namoz
+    </button>
+    <button class="mob-more-btn" data-page="andoza" onclick="APP.showPage('andoza');closeMobMore()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
+      Andoza
+    </button>
   </div>
 </div>
 
@@ -1053,6 +1288,26 @@ APP.showPage = function(id) {
   currentPage = id;
   if (helpCountdownTimer) { clearInterval(helpCountdownTimer); helpCountdownTimer = null; }
   if (andozaClockTimer) { clearInterval(andozaClockTimer); andozaClockTimer = null; }
+  // Sync mobile bottom nav
+  var mainPages = ['today','debt','weekly','stats'];
+  document.querySelectorAll('.mob-nav-item').forEach(function(btn){
+    btn.classList.remove('active');
+    if (btn.dataset.page === id) btn.classList.add('active');
+  });
+  document.querySelectorAll('.mob-more-btn').forEach(function(btn){
+    btn.classList.remove('active');
+    if (btn.dataset.page === id) btn.classList.add('active');
+  });
+  // If it's a "more" page, keep the more button highlighted
+  if (!mainPages.includes(id)) {
+    var moreBtn = document.querySelector('.mob-nav-item[data-page="__more__"]');
+    if (moreBtn) moreBtn.classList.add('active');
+  }
+  // Scroll desktop main to top on page switch
+  var dm = document.getElementById('desktopMain');
+  if (dm) dm.scrollTop = 0;
+  // Update desktop page title
+  if (typeof updateDesktopTitle === 'function') updateDesktopTitle(id);
   renderCurrentPage();
 };
 
@@ -2148,6 +2403,86 @@ document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('open');
   modalKey = null;
+}
+
+// ============================================================
+// DESKTOP SIDEBAR TOGGLE
+// ============================================================
+var sidebarOpen = true;
+var PAGE_TITLES = {
+  today:'Bugun', debt:'Qarz', weekly:'Hafta', journal:'Jurnal',
+  stats:'Statistika', calendar:'Kalendar', help:'Namoz vaqtlari', andoza:'Andoza'
+};
+// SVG icons for each tab (no emoji)
+var TAB_ICONS = {
+  today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>',
+  debt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  weekly:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>',
+  journal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  stats:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  help:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+  andoza:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>'
+};
+
+function injectTabIcons() {
+  Object.keys(TAB_ICONS).forEach(function(key) {
+    var tab = document.getElementById('tab-' + key);
+    if (!tab) return;
+    tab.removeAttribute('data-icon');
+    // Wrap existing text in .tab-label
+    var text = tab.textContent.trim();
+    tab.innerHTML = '';
+    var iconSpan = document.createElement('span');
+    iconSpan.className = 'tab-icon';
+    iconSpan.innerHTML = TAB_ICONS[key];
+    var labelSpan = document.createElement('span');
+    labelSpan.className = 'tab-label';
+    labelSpan.textContent = text;
+    tab.appendChild(iconSpan);
+    tab.appendChild(labelSpan);
+  });
+}
+
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  var nav = document.querySelector('.top-nav');
+  if (!nav) return;
+  if (sidebarOpen) {
+    nav.classList.remove('collapsed');
+  } else {
+    nav.classList.add('collapsed');
+  }
+}
+
+function updateDesktopTitle(id) {
+  var el = document.getElementById('desktopPageTitle');
+  if (el) el.textContent = PAGE_TITLES[id] || '';
+}
+
+// Init on load
+document.addEventListener('DOMContentLoaded', function() {
+  injectTabIcons();
+  updateDesktopTitle('today');
+});
+// Also run immediately in case DOMContentLoaded already fired
+(function() {
+  if (document.readyState !== 'loading') {
+    injectTabIcons();
+    updateDesktopTitle('today');
+  }
+})();
+
+// ============================================================
+// MOBILE MORE SHEET
+// ============================================================
+function toggleMobMore() {
+  document.getElementById('mobMoreSheet').classList.toggle('open');
+  document.getElementById('mobMoreOverlay').classList.toggle('open');
+}
+function closeMobMore() {
+  document.getElementById('mobMoreSheet').classList.remove('open');
+  document.getElementById('mobMoreOverlay').classList.remove('open');
 }
 
 // ============================================================
