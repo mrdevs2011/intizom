@@ -238,6 +238,51 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .journal-entry-edit.open{display:block;}
 .journal-entry.expanded{border-color:var(--border2);}
 
+/* === HELP PAGE === */
+.help-header{background:linear-gradient(145deg,var(--bg2),var(--bg3));border:0.5px solid var(--border2);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
+.help-header-title{font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-0.02em;}
+.help-header-sub{font-size:13px;color:var(--text3);line-height:1.5;}
+
+.prayer-times-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;}
+.ptc-header{padding:14px 16px 10px;border-bottom:0.5px solid var(--border);}
+.ptc-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:2px;}
+.ptc-sub{font-size:11px;color:var(--text3);}
+.ptc-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:0.5px solid var(--border);transition:background 0.15s;}
+.ptc-row:last-child{border-bottom:none;}
+.ptc-row.highlight{background:var(--green2);border-color:rgba(29,158,117,0.2);}
+.ptc-row.late-row{background:var(--red2);}
+.ptc-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ptc-icon svg{width:16px;height:16px;}
+.ptc-info{flex:1;}
+.ptc-name{font-size:14px;font-weight:700;color:var(--text);}
+.ptc-desc{font-size:11px;color:var(--text3);margin-top:2px;}
+.ptc-time-col{text-align:right;}
+.ptc-time{font-size:18px;font-weight:800;color:var(--text);font-family:var(--mono);letter-spacing:-0.02em;}
+.ptc-window{font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono);}
+.ptc-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;font-family:var(--mono);margin-top:4px;display:inline-block;}
+.ptc-badge-current{background:rgba(29,158,117,0.2);color:var(--green);}
+.ptc-badge-late{background:rgba(217,69,69,0.15);color:var(--red);}
+.ptc-badge-next{background:rgba(232,160,32,0.15);color:var(--amber);}
+.ptc-badge-done{background:rgba(77,191,160,0.15);color:var(--teal);}
+.ptc-badge-waiting{background:var(--bg4);color:var(--text3);}
+
+.countdown-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px;text-align:center;}
+.countdown-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:8px;}
+.countdown-time{font-size:38px;font-weight:800;color:var(--text);font-family:var(--mono);letter-spacing:-0.02em;line-height:1;}
+.countdown-sub{font-size:12px;color:var(--text3);margin-top:6px;}
+.countdown-next-name{color:var(--green);font-weight:700;}
+
+.help-tip-card{background:var(--bg2);border:0.5px solid var(--border);border-left:2px solid var(--green);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;}
+.help-tip-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px;display:flex;align-items:center;gap:7px;}
+.help-tip-body{font-size:12px;color:var(--text3);line-height:1.7;}
+.help-tip-body strong{color:var(--text2);}
+
+.day-schedule-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.dsg-item{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:14px;}
+.dsg-time{font-size:11px;font-weight:700;color:var(--green);font-family:var(--mono);margin-bottom:4px;}
+.dsg-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.dsg-desc{font-size:11px;color:var(--text3);line-height:1.5;}
+
 /* === MODAL === */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:100;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
 .modal-overlay.open{display:flex;}
@@ -320,6 +365,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
       <button class="nav-tab" id="tab-journal" onclick="APP.showPage('journal')">Jurnal</button>
       <button class="nav-tab" id="tab-stats" onclick="APP.showPage('stats')">Statistika</button>
       <button class="nav-tab" id="tab-calendar" onclick="APP.showPage('calendar')">Kalendar</button>
+      <button class="nav-tab" id="tab-help" onclick="APP.showPage('help')">Yordam</button>
     </div>
   </div>
 
@@ -350,6 +396,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   <div class="page" id="page-calendar">
     <div id="calContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
   </div>
+
+  <div class="page" id="page-help">
+    <div id="helpContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay">
@@ -368,6 +418,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 
 <script>
 // ============================================================
+// APP OBJECT — declared first to avoid "undefined" errors
+// ============================================================
+var APP = {};
+
+// ============================================================
 // CONFIG
 // ============================================================
 const firebaseConfig = {
@@ -384,7 +439,6 @@ const USER_ID = 'user_main';
 try {
   firebase.initializeApp(firebaseConfig);
   db = firebase.firestore();
-  try { db.settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED }); } catch(e){}
   db.enablePersistence({ synchronizeTabs: true }).catch(function(){});
 } catch(e) { console.warn('Firebase init failed:', e); }
 
@@ -397,7 +451,17 @@ const TOTAL_DAYS = 69;
 const LATE_AFTER_MIN = 90;
 const EDIT_WINDOW_DAYS = 1;
 
-// Default prayer times for Tashkent (fallback)
+// ============================================================
+// NAMOZ DESCRIPTIONS
+// ============================================================
+const NAMOZ_DESCS = {
+  bomdod: { why: 'Kun boshida qalb pokligi. Uyqu ruhni tozalaydi, bomdod esa kunni nurga to\'ldiradi.', window: 'Tongdan quyosh chiqqunga qadar' },
+  peshin: { why: 'Kun o\'rtasida to\'xtash. Ish-mashg\'ulot orasida Allohni eslab, yurgizishni so\'rash.', window: 'Quyosh tepadan o\'tgandan asr vaqtigacha' },
+  asr:    { why: 'Kechqurungi zikr. Kun ishi yarimlagan, shu lahzada shukr va taqvimlash vaqti.', window: 'Asr vaqtidan quyosh botgunga qadar' },
+  shom:   { why: 'Quyosh botganda shukr. Yaratganga bugun yashaganligimiz uchun minnatdorlik.', window: 'Quyosh botgandan shafaq o\'chgunga qadar' },
+  xufton: { why: 'Kunni yopiq qilish. Uyquga ketishdan oldin oxirgi aloqa — qalb tinch qoladi.', window: 'Shafaq o\'chgandan tong otgunga qadar' }
+};
+
 const DEFAULT_TIMES = [
   { id: 'bomdod', name: 'Bomdod', time: '03:04' },
   { id: 'peshin', name: 'Peshin', time: '12:25' },
@@ -448,8 +512,12 @@ const ICONS = {
   pen:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
   compass: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>',
   refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>',
+  clock:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  help:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
 };
 const NAMOZ_ICONS = ['moon','sun','cloud','sunset','stars'];
+const NAMOZ_ICON_COLORS = ['#6B8ED6','#F5C842','#8DB8D6','#E88A3A','#9B7ED6'];
+const NAMOZ_BG_COLORS = ['rgba(107,142,214,0.12)','rgba(245,200,66,0.12)','rgba(141,184,214,0.12)','rgba(232,138,58,0.12)','rgba(155,126,214,0.12)'];
 
 // ============================================================
 // STATE
@@ -464,10 +532,11 @@ var calMonth = new Date().getMonth();
 var notifTimer = null;
 var unsubscribe = null;
 var debtFilter = 'all';
-var weeklyOffset = 0; // 0 = this week, -1 = last week, etc.
-var prayerLocation = null; // { city, lat, lng }
+var weeklyOffset = 0;
+var prayerLocation = null;
 var journalSearch = '';
 var expandedJournalKey = null;
+var helpCountdownTimer = null;
 
 // ============================================================
 // UTILITIES
@@ -537,7 +606,6 @@ function isNamozCurrent(namozId, key) {
   if (now < nt) return false;
   var diffMin = (now - nt) / 60000;
   if (diffMin > LATE_AFTER_MIN) return false;
-  // Next namoz
   if (idx + 1 < NAMOZLAR.length) {
     var np = NAMOZLAR[idx+1].time.split(':');
     var nxt = new Date(); nxt.setHours(parseInt(np[0],10), parseInt(np[1],10), 0, 0);
@@ -626,7 +694,6 @@ function getNamozStats() {
   return counts;
 }
 function getWeekDays(offset) {
-  // Returns Mon–Sun for the week at offset (0 = current)
   var today = new Date();
   var dow = today.getDay();
   var mon = new Date(today);
@@ -640,6 +707,47 @@ function getWeekDays(offset) {
 }
 
 // ============================================================
+// PRAYER TIME HELPERS
+// ============================================================
+function getNextNamoz() {
+  var now = new Date();
+  for (var i = 0; i < NAMOZLAR.length; i++) {
+    var n = NAMOZLAR[i];
+    var parts = n.time.split(':');
+    var nt = new Date(); nt.setHours(parseInt(parts[0],10), parseInt(parts[1],10), 0, 0);
+    if (now < nt) return { namoz: n, time: nt, index: i };
+  }
+  // Next day bomdod
+  var bomdod = NAMOZLAR[0];
+  var parts = bomdod.time.split(':');
+  var nt = new Date(); nt.setDate(nt.getDate() + 1);
+  nt.setHours(parseInt(parts[0],10), parseInt(parts[1],10), 0, 0);
+  return { namoz: bomdod, time: nt, index: 0 };
+}
+
+function getCurrentNamozStatus(namozId) {
+  var now = new Date();
+  var idx = NAMOZLAR.findIndex(function(x){ return x.id === namozId; });
+  if (idx < 0) return 'waiting';
+  var n = NAMOZLAR[idx];
+  var parts = n.time.split(':');
+  var nt = new Date(); nt.setHours(parseInt(parts[0],10), parseInt(parts[1],10), 0, 0);
+  if (now < nt) return 'waiting';
+  var diff = (now - nt) / 60000;
+  if (diff <= LATE_AFTER_MIN) return 'current';
+  return 'late';
+}
+
+function formatCountdown(ms) {
+  if (ms <= 0) return '00:00:00';
+  var totalSec = Math.floor(ms / 1000);
+  var h = Math.floor(totalSec / 3600);
+  var m = Math.floor((totalSec % 3600) / 60);
+  var s = totalSec % 60;
+  return pad(h) + ':' + pad(m) + ':' + pad(s);
+}
+
+// ============================================================
 // PRAYER TIMES — LOCATION-BASED
 // ============================================================
 var prayerFetchInProgress = false;
@@ -647,15 +755,12 @@ var prayerFetchInProgress = false;
 function fetchPrayerTimes(lat, lng, cityName) {
   if (prayerFetchInProgress) return;
   prayerFetchInProgress = true;
-  prayerLocation = { city: cityName || ('%.4f, %.4f'.replace('%.4f', lat.toFixed(4)).replace('%.4f', lng.toFixed(4))), lat: lat, lng: lng };
+  prayerLocation = { city: cityName || (lat.toFixed(4) + ', ' + lng.toFixed(4)), lat: lat, lng: lng };
   showToast('Namoz vaqtlari yuklanmoqda...');
-
-  // Use aladhan.com API (free, no key needed)
   var today = new Date();
   var url = 'https://api.aladhan.com/v1/timings/' +
     Math.floor(today.getTime() / 1000) +
     '?latitude=' + lat + '&longitude=' + lng + '&method=3';
-
   fetch(url)
     .then(function(r){ return r.json(); })
     .then(function(data) {
@@ -669,13 +774,9 @@ function fetchPrayerTimes(lat, lng, cityName) {
           { id: 'shom',   name: 'Shom',   time: t.Maghrib.slice(0,5) },
           { id: 'xufton', name: 'Xufton', time: t.Isha.slice(0,5) },
         ];
-        // Save to localStorage
         try {
           localStorage.setItem('intizom_prayer_times', JSON.stringify({
-            times: NAMOZLAR,
-            city: prayerLocation.city,
-            lat: lat, lng: lng,
-            date: todayKey()
+            times: NAMOZLAR, city: prayerLocation.city, lat: lat, lng: lng, date: todayKey()
           }));
         } catch(e){}
         showToast('Namoz vaqtlari yangilandi — ' + prayerLocation.city);
@@ -684,7 +785,7 @@ function fetchPrayerTimes(lat, lng, cityName) {
         showToast('Vaqtlar yuklanmadi. Tashkent vaqtlari ishlatilmoqda.');
       }
     })
-    .catch(function(err) {
+    .catch(function() {
       prayerFetchInProgress = false;
       showToast('Internet xatosi. Tashkent vaqtlari ishlatilmoqda.');
     });
@@ -712,7 +813,6 @@ APP.requestLocation = function() {
     function(pos) {
       var lat = pos.coords.latitude;
       var lng = pos.coords.longitude;
-      // Reverse geocode with nominatim
       fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lng + '&format=json')
         .then(function(r){ return r.json(); })
         .then(function(data) {
@@ -721,7 +821,7 @@ APP.requestLocation = function() {
         })
         .catch(function(){ fetchPrayerTimes(lat, lng, null); });
     },
-    function(err) { showToast("Joylashuv ruxsati berilmadi."); }
+    function() { showToast("Joylashuv ruxsati berilmadi."); }
   );
 };
 
@@ -751,7 +851,7 @@ function startFirestoreListener() {
           else state[change.doc.id] = change.doc.data();
         });
         renderCurrentPage();
-      }, function(err) {
+      }, function() {
         setOnline(false);
         renderCurrentPage();
       });
@@ -778,10 +878,8 @@ function hideSaving() {
 }
 
 // ============================================================
-// APP OBJECT
+// APP METHODS
 // ============================================================
-var APP = APP || {};
-
 APP.reconnect = function() {
   showToast("Qayta ulanilmoqda...");
   startFirestoreListener();
@@ -793,6 +891,7 @@ APP.showPage = function(id) {
   document.getElementById('page-' + id).classList.add('active');
   document.getElementById('tab-' + id).classList.add('active');
   currentPage = id;
+  if (helpCountdownTimer) { clearInterval(helpCountdownTimer); helpCountdownTimer = null; }
   renderCurrentPage();
 };
 
@@ -945,8 +1044,6 @@ function renderToday() {
   var debts = getDebtItems();
 
   var html = '';
-
-  // Header
   html += '<div class="header-card">' +
     '<div class="streak-row"><span class="streak-num">' + streak + '</span><span class="streak-suffix">kun ketma-ket</span></div>' +
     '<div class="streak-sub">' + dayNum + '-kun · ' + daysLeft + ' kun qoldi</div>' +
@@ -974,14 +1071,14 @@ function renderToday() {
       '<div class="sunday-sub">Faqat namoz. Xohlaganing qil. Yaxshi hordiq!</div></div>';
   }
 
-  // Prayer location card
   html += '<div class="prayer-location-card">' +
     '<div class="prayer-location-icon">' + ICONS.pin + '</div>' +
     '<div class="prayer-location-text">' + (prayerLocation ? prayerLocation.city : 'Toshkent (standart)') + '</div>' +
-    '<button class="prayer-fetch-btn" onclick="APP.requestLocation()">' + (prayerLocation ? ICONS.refresh.replace('svg ', 'svg style="width:11px;height:11px;display:inline-block;margin-right:4px;vertical-align:middle" ') + ' Yangilash' : ICONS.compass.replace('svg ', 'svg style="width:11px;height:11px;display:inline-block;margin-right:4px;vertical-align:middle" ') + ' Joylashuv') + '</button>' +
-    '</div>';
+    '<button class="prayer-fetch-btn" onclick="APP.requestLocation()">' +
+    (prayerLocation ? '<svg style="width:11px;height:11px;display:inline-block;margin-right:4px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Yangilash'
+                    : '<svg style="width:11px;height:11px;display:inline-block;margin-right:4px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>Joylashuv') +
+    '</button></div>';
 
-  // Namozlar
   html += '<div class="section-label">Namozlar</div><div class="namoz-grid">';
   NAMOZLAR.forEach(function(n, i) {
     var done = !!ds['n_' + n.id];
@@ -1019,7 +1116,6 @@ function renderToday() {
     '</div>';
 
   html += renderChartCard();
-
   document.getElementById('todayContent').innerHTML = html;
 }
 
@@ -1060,39 +1156,31 @@ function renderDebt() {
     if (debtFilter === 'task') return d.type === 'task';
     return true;
   });
-
   var namozCount = allDebts.filter(function(d){ return d.type === 'namoz'; }).length;
   var taskCount = allDebts.filter(function(d){ return d.type === 'task'; }).length;
-
   var html = '';
-
   html += '<div class="debt-page-header">' +
     '<div class="debt-page-title">' + allDebts.length + ' ta qarz</div>' +
     '<div class="debt-page-sub">Namoz: ' + namozCount + ' · Vazifa: ' + taskCount + '</div>' +
     '</div>';
-
   html += '<div class="debt-filters">' +
     '<div class="debt-filter ' + (debtFilter==='all'?'active':'') + '" onclick="APP.setDebtFilter(\'all\')">Hammasi (' + allDebts.length + ')</div>' +
     '<div class="debt-filter ' + (debtFilter==='namoz'?'active':'') + '" onclick="APP.setDebtFilter(\'namoz\')">Namoz (' + namozCount + ')</div>' +
     '<div class="debt-filter ' + (debtFilter==='task'?'active':'') + '" onclick="APP.setDebtFilter(\'task\')">Vazifa (' + taskCount + ')</div>' +
     '</div>';
-
   if (filtered.length === 0) {
     html += '<div class="debt-empty"><div class="debt-empty-icon">✓</div>' +
       (allDebts.length === 0 ? 'Hech qanday qarz yo\'q! Ajoyib.' : 'Bu filtr bo\'yicha qarz yo\'q.') +
       '</div>';
   } else {
-    // Group by date
     var groups = {};
     filtered.forEach(function(d) {
       if (!groups[d.key]) groups[d.key] = [];
       groups[d.key].push(d);
     });
-
     var sortedKeys = Object.keys(groups).sort(function(a, b){ return b > a ? 1 : -1; });
     sortedKeys.forEach(function(key) {
       var dayNum = Math.floor((keyToDate(key) - START) / 86400000) + 1;
-      var complete = isDayComplete(key);
       var clickable = !isPastDayLocked(key);
       html += '<div class="debt-group">' +
         '<div class="debt-group-label">' + dayNum + '-kun &nbsp;·&nbsp; ' + formatKey(key) + (clickable ? ' &nbsp;·&nbsp; <span style="color:var(--green);cursor:pointer" onclick="APP.openModal(\'' + key + '\')">tahrirlash →</span>' : ' &nbsp;<span style="color:var(--text3);font-size:9px">qulflangan</span>') + '</div>';
@@ -1106,7 +1194,6 @@ function renderDebt() {
       html += '</div>';
     });
   }
-
   document.getElementById('debtContent').innerHTML = html;
 }
 
@@ -1117,14 +1204,11 @@ function renderWeekly() {
   var days = getWeekDays(weeklyOffset);
   var today = new Date();
   var dayLbls = ['Du','Se','Ch','Pa','Ju','Sh','Ya'];
-
-  // Week label
   var monDate = days[0];
   var sunDate = days[6];
   var mNames = ['yan','fev','mar','apr','may','iyn','iyl','avg','sen','okt','noy','dek'];
   var weekLabel = monDate.getDate() + ' ' + mNames[monDate.getMonth()] + ' — ' + sunDate.getDate() + ' ' + mNames[sunDate.getMonth()];
   var weekKey = days[0].getFullYear() + '-' + pad(days[0].getMonth()+1) + '-' + pad(days[0].getDate());
-
   var totalDays = 0, completeDays = 0, partialDays = 0, failedDays = 0;
   days.forEach(function(d) {
     var k = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
@@ -1134,7 +1218,6 @@ function renderWeekly() {
     else if (isDayPartial(k)) partialDays++;
     else failedDays++;
   });
-
   var totalNamozThisWeek = 0, totalNamozPossible = 0;
   days.forEach(function(d) {
     var k = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
@@ -1145,22 +1228,15 @@ function renderWeekly() {
       if (ds['n_' + n.id]) totalNamozThisWeek++;
     });
   });
-
   var weeklyJournal = '';
   var wj = state['_week_' + weekKey];
   if (wj && wj.journal) weeklyJournal = wj.journal;
-
-  var isCurrentWeek = weeklyOffset === 0;
-  var isPastWeek = weeklyOffset < 0;
-
   var html = '<div class="weekly-review-card">';
   html += '<div class="wr-week-nav">' +
     '<button class="wr-nav-btn" onclick="APP.weeklyPrev()">&#8249;</button>' +
     '<div class="wr-week-label">' + weekLabel + '</div>' +
     '<button class="wr-nav-btn" ' + (weeklyOffset >= 0 ? 'style="opacity:0.3;pointer-events:none"' : '') + ' onclick="APP.weeklyNext()">&#8250;</button>' +
     '</div>';
-
-  // Days grid
   html += '<div class="wr-days-grid">';
   days.forEach(function(d, i) {
     var k = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
@@ -1172,8 +1248,7 @@ function renderWeekly() {
     if (!inRange || isFuture) circleClass += 'out';
     else if (isDayComplete(k)) circleClass += 'full';
     else if (isSun) circleClass += 'sunday';
-    else if (isDayPartial(k)) circleClass += 'part';
-    else if (isToday) circleClass += 'part';
+    else if (isDayPartial(k) || isToday) circleClass += 'part';
     else circleClass += 'failed';
     var border = isToday ? 'border:1.5px solid var(--green);' : '';
     html += '<div class="wr-day-col">' +
@@ -1182,28 +1257,20 @@ function renderWeekly() {
       '</div>';
   });
   html += '</div>';
-
-  // Stats row
   html += '<div class="wr-stats-row">' +
     '<div class="wr-stat"><div class="wr-stat-val" style="color:var(--green)">' + completeDays + '</div><div class="wr-stat-lbl">Mukammal</div></div>' +
     '<div class="wr-stat"><div class="wr-stat-val" style="color:var(--teal)">' + partialDays + '</div><div class="wr-stat-lbl">Qisman</div></div>' +
     '<div class="wr-stat"><div class="wr-stat-val" style="color:var(--red)">' + failedDays + '</div><div class="wr-stat-lbl">O\'tkazib</div></div>' +
     '<div class="wr-stat"><div class="wr-stat-val">' + totalNamozThisWeek + '/' + totalNamozPossible + '</div><div class="wr-stat-lbl">Namoz</div></div>' +
     '</div>';
-
-  // Weekly journal
   html += '<div class="wr-journal-section">' +
-    '<div class="wr-journal-title">' + (isCurrentWeek ? 'Bu hafta haqida' : 'Hafta sharhi') + '</div>' +
+    '<div class="wr-journal-title">' + (weeklyOffset === 0 ? 'Bu hafta haqida' : 'Hafta sharhi') + '</div>' +
     '<textarea class="wr-journal-textarea" id="weeklyJournalInput" placeholder="Bu hafta qanday o\'tdi? Nimani yaxshi qilding? Nimani yaxshilash kerak?">' +
     (weeklyJournal ? weeklyJournal.replace(/</g,'&lt;').replace(/>/g,'&gt;') : '') + '</textarea>' +
     '<button class="wr-journal-save" onclick="APP.saveWeeklyJournal(\'' + weekKey + '\', document.getElementById(\'weeklyJournalInput\').value)">Saqlash</button>' +
     '</div>';
-
   html += '</div>';
-
-  // Weekly namoz breakdown
-  html += '<div class="section-label">Namoz tahlili</div>';
-  html += '<div class="namoz-stats-table">';
+  html += '<div class="section-label">Namoz tahlili</div><div class="namoz-stats-table">';
   NAMOZLAR.forEach(function(n, ni) {
     var done = 0, total = 0;
     days.forEach(function(d) {
@@ -1222,7 +1289,6 @@ function renderWeekly() {
       '</div>';
   });
   html += '</div>';
-
   document.getElementById('weeklyContent').innerHTML = html;
 }
 
@@ -1239,23 +1305,17 @@ function renderJournal() {
     allEntries.push({ key: key, text: ds.journal || '', complete: isDayComplete(key), partial: isDayPartial(key) });
     d.setDate(d.getDate() + 1);
   }
-
-  // Filter by search
   var filtered = allEntries.filter(function(e) {
     if (!journalSearch) return e.text.length > 0 || e.key === todayKey();
     return e.text.toLowerCase().indexOf(journalSearch.toLowerCase()) > -1;
-  }).reverse(); // newest first
-
+  }).reverse();
   var withText = allEntries.filter(function(e){ return e.text.length > 0; }).length;
-
   var html = '';
   html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">' +
     '<div style="font-size:22px;font-weight:800;color:var(--text);font-family:var(--mono);">' + withText + '</div>' +
     '<div style="font-size:12px;color:var(--text3);">yozuv · ' + getDayNum() + ' kundan</div>' +
     '</div>';
-
   html += '<input type="text" class="journal-search" placeholder="Jurnal ichida qidirish..." oninput="APP.setJournalSearch(this.value)" value="' + journalSearch.replace(/"/g,'&quot;') + '">';
-
   if (filtered.length === 0) {
     html += '<div class="journal-empty">Hech qanday yozuv topilmadi.</div>';
   } else {
@@ -1270,31 +1330,23 @@ function renderJournal() {
         '<div class="journal-entry-date">' + formatKey(e.key) + '</div>' +
         '<div class="journal-entry-badge" style="background:' + dotColor + '"></div>' +
         '</div>';
-
       if (e.text) {
         html += '<div class="journal-entry-text">' + e.text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
       } else {
         html += '<div class="journal-entry-text" style="color:var(--text3);font-style:italic">Yozuv yo\'q — bosing va yozing...</div>';
       }
-
       if (isExpanded) {
-        html += '<textarea class="journal-entry-edit open" ' +
-          'placeholder="Bu kun haqida yozing..." ' +
+        html += '<textarea class="journal-entry-edit open" placeholder="Bu kun haqida yozing..." ' +
           (isLocked ? 'disabled style="opacity:0.4"' : '') +
-          ' onblur="APP.saveJournalEntry(\'' + e.key + '\', this.value)" ' +
-          'onclick="event.stopPropagation()">' +
+          ' onblur="APP.saveJournalEntry(\'' + e.key + '\', this.value)" onclick="event.stopPropagation()">' +
           (e.text ? e.text.replace(/</g,'&lt;').replace(/>/g,'&gt;') : '') + '</textarea>';
         if (isLocked) {
-          html += '<div style="font-size:11px;color:var(--text3);margin-top:8px;display:flex;align-items:center;gap:5px;">' +
-            '<span style="color:var(--text3)">' + ICONS.lock.replace('svg ', 'svg style="width:12px;height:12px;" ') + '</span>' +
-            'Bu kun qulflangan.</div>';
+          html += '<div style="font-size:11px;color:var(--text3);margin-top:8px;">🔒 Bu kun qulflangan.</div>';
         }
       }
-
       html += '</div>';
     });
   }
-
   document.getElementById('journalContent').innerHTML = html;
 }
 
@@ -1308,7 +1360,6 @@ function renderStats() {
   var successPct = dayNum > 1 ? Math.round((totalDone / (dayNum - 1)) * 100) : 0;
   var debts = getDebtItems();
   var namozStats = getNamozStats();
-
   var bestStreak = 0, curS = 0;
   var today2 = new Date();
   for (var i = 0; i < TOTAL_DAYS; i++) {
@@ -1318,10 +1369,8 @@ function renderStats() {
     if (isDayComplete(k)) { curS++; if (curS > bestStreak) bestStreak = curS; }
     else curS = 0;
   }
-
   var totalNamoz = 0, totalNamozPossible = 0;
   Object.values(namozStats).forEach(function(s){ totalNamoz += s.done; totalNamozPossible += s.total; });
-
   var html = '';
   html += '<div class="stats-big-grid">' +
     '<div class="stat-big accent-green"><div class="stat-big-val">' + streak + '</div><div class="stat-big-lbl">Joriy Streak</div><div class="stat-big-sub">kun uzluksiz</div></div>' +
@@ -1329,12 +1378,10 @@ function renderStats() {
     '<div class="stat-big accent-green"><div class="stat-big-val">' + totalDone + '</div><div class="stat-big-lbl">Mukammal Kun</div><div class="stat-big-sub">/ ' + (dayNum-1) + ' o\'tdi</div></div>' +
     '<div class="stat-big ' + (successPct >= 80 ? 'accent-green' : successPct >= 50 ? 'accent-amber' : 'accent-red') + '"><div class="stat-big-val">' + successPct + '%</div><div class="stat-big-lbl">Umumiy Natija</div><div class="stat-big-sub">muvaffaqiyat</div></div>' +
     '</div>';
-
   html += '<div class="stats-big-grid">' +
     '<div class="stat-big"><div class="stat-big-val">' + totalNamoz + '</div><div class="stat-big-lbl">Namoz O\'qildi</div><div class="stat-big-sub">/ ' + totalNamozPossible + ' dan</div></div>' +
     '<div class="stat-big accent-red"><div class="stat-big-val">' + debts.length + '</div><div class="stat-big-lbl">Qarz</div><div class="stat-big-sub">bajarilmagan</div></div>' +
     '</div>';
-
   html += '<div class="section-label">Har bir namoz</div><div class="namoz-stats-table">';
   NAMOZLAR.forEach(function(n, i) {
     var s = namozStats[n.id];
@@ -1347,14 +1394,10 @@ function renderStats() {
       '</div>';
   });
   html += '</div>';
-
-  // Heatmap
-  html += '<div class="section-label">Haftalik ko\'rinish</div>';
   var dayLbls = ['Ya','Du','Se','Ch','Pa','Ju','Sh'];
   var wEnd = new Date(today2);
   wEnd.setDate(wEnd.getDate() + (0 - wEnd.getDay() + 7) % 7);
   if (wEnd > today2) wEnd.setDate(wEnd.getDate() - 7);
-
   var weeks = [];
   for (var w = 6; w >= 0; w--) {
     var weekDays = [];
@@ -1366,7 +1409,7 @@ function renderStats() {
     }
     weeks.push(weekDays);
   }
-
+  html += '<div class="section-label">Haftalik ko\'rinish</div>';
   html += '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;">';
   html += '<div style="display:flex;gap:4px;min-width:min-content;">';
   html += '<div style="display:flex;flex-direction:column;gap:4px;margin-right:4px;">';
@@ -1394,7 +1437,6 @@ function renderStats() {
     html += '</div>';
   });
   html += '</div></div>';
-
   document.getElementById('statsContent').innerHTML = html;
 }
 
@@ -1409,7 +1451,6 @@ function renderCalendar() {
   var lastDay  = new Date(calYear, calMonth + 1, 0);
   var startDow = firstDay.getDay();
   if (startDow === 0) startDow = 7;
-
   var html = '<div class="cal-month-nav">' +
     '<button class="cal-nav-btn" onclick="APP.calPrev()">&#8249;</button>' +
     '<div class="cal-month-label">' + monthNames[calMonth] + ' ' + calYear + '</div>' +
@@ -1418,9 +1459,7 @@ function renderCalendar() {
     '<div class="cal-wd">Pa</div><div class="cal-wd">Ju</div><div class="cal-wd">Sh</div>' +
     '<div class="cal-wd" style="color:var(--amber)">Ya</div></div>' +
     '<div class="cal-grid">';
-
   for (var i = 1; i < startDow; i++) html += '<div class="cal-day empty"></div>';
-
   for (var day = 1; day <= lastDay.getDate(); day++) {
     var dateObj = new Date(calYear, calMonth, day);
     var key = dateObj.getFullYear() + '-' + pad(dateObj.getMonth()+1) + '-' + pad(dateObj.getDate());
@@ -1439,14 +1478,12 @@ function renderCalendar() {
     var clickable = inRange && !isFuture;
     html += '<div class="' + cls + '"' + (clickable ? ' onclick="APP.openModal(\'' + key + '\')"' : '') + '>' + day + '</div>';
   }
-
   html += '</div><div class="cal-legend">' +
     '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green)"></div>Mukammal</div>' +
     '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green2);border:0.5px solid var(--teal)"></div>Qisman</div>' +
     '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--red2);border:0.5px solid var(--red)"></div>O\'tkazib</div>' +
     '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--amber2);border:0.5px solid var(--amber)"></div>Yakshanba</div>' +
     '</div>';
-
   document.getElementById('calContent').innerHTML = html;
 }
 
@@ -1462,22 +1499,18 @@ function renderModal(key) {
   var label = dayNames[dateObj.getDay()] + ', ' + dateObj.getDate() + ' ' + mNames[dateObj.getMonth()];
   var dayNum = Math.floor((dateObj - START) / 86400000) + 1;
   var locked = isPastDayLocked(key);
-
   var html = '<div class="modal-title">' + dayNum + '-kun' + (locked ? ' &nbsp;<span style="font-size:13px;color:var(--text3);font-weight:500">qulflangan</span>' : '') + '</div>' +
     '<div class="modal-date">' + label + '</div>';
-
   if (locked) {
     html += '<div class="modal-locked-banner">' +
       '<div class="modal-locked-icon" style="color:var(--text3)">' + ICONS.lock + '</div>' +
       '<div class="modal-locked-text">Bu kun qulflangan — faqat bugun va kecha tahrirlanadi.</div>' +
       '</div>';
   }
-
   if (sunday) {
     html += '<div class="sunday-banner" style="margin-bottom:14px"><div class="sunday-title">Yakshanba — dam olish</div>' +
       '<div class="sunday-sub">Faqat namoz. Xohlaganing qil.</div></div>';
   }
-
   html += '<div class="section-label">Namozlar</div><div class="modal-namoz-grid">';
   NAMOZLAR.forEach(function(n, i) {
     var done = !!ds['n_' + n.id];
@@ -1492,7 +1525,6 @@ function renderModal(key) {
       '<div class="mn-time">' + n.time + '</div></div>';
   });
   html += '</div>';
-
   if (!sunday) {
     html += '<div class="section-label">Vazifalar</div><div class="modal-tasks">';
     TASKS.forEach(function(t) {
@@ -1503,14 +1535,156 @@ function renderModal(key) {
     });
     html += '</div>';
   }
-
   if (!locked) {
     html += '<div class="section-label">Kundalik</div>' +
       '<textarea class="modal-journal" placeholder="Bugun qanday o\'tdi? Qisqacha yoz..." onblur="APP.saveJournal(\'' + key + '\', this.value)">' +
       (ds.journal ? ds.journal.replace(/</g,'&lt;').replace(/>/g,'&gt;') : '') + '</textarea>';
   }
-
   document.getElementById('modalContent').innerHTML = html;
+}
+
+// ============================================================
+// RENDER: HELP PAGE
+// ============================================================
+function renderHelp() {
+  var now = new Date();
+  var tk = todayKey();
+  var ds = state[tk] || {};
+
+  // Determine status of each namoz
+  var html = '';
+
+  // Header
+  html += '<div class="help-header">' +
+    '<div class="help-header-title">Namoz vaqtlari</div>' +
+    '<div class="help-header-sub">' + (prayerLocation ? prayerLocation.city : 'Toshkent (standart vaqtlar)') + ' · Bugun</div>' +
+    '</div>';
+
+  // Countdown to next namoz
+  var next = getNextNamoz();
+  var msLeft = next.time - now;
+  html += '<div class="countdown-card" id="helpCountdownCard">' +
+    '<div class="countdown-label">Keyingi namozgacha</div>' +
+    '<div class="countdown-time" id="helpCountdown">' + formatCountdown(msLeft) + '</div>' +
+    '<div class="countdown-sub"><span class="countdown-next-name">' + next.namoz.name + '</span> · ' + next.namoz.time + '</div>' +
+    '</div>';
+
+  // Prayer times detailed cards
+  html += '<div class="section-label">Barcha namoz vaqtlari</div>';
+  html += '<div class="prayer-times-card">';
+
+  var namozColors = {
+    bomdod: { icon: '#6B8ED6', bg: 'rgba(107,142,214,0.1)' },
+    peshin: { icon: '#F5C842', bg: 'rgba(245,200,66,0.1)' },
+    asr:    { icon: '#8DB8D6', bg: 'rgba(141,184,214,0.1)' },
+    shom:   { icon: '#E88A3A', bg: 'rgba(232,138,58,0.1)' },
+    xufton: { icon: '#9B7ED6', bg: 'rgba(155,126,214,0.1)' },
+  };
+
+  // Header row
+  html += '<div class="ptc-header"><div class="ptc-title">Bugungi namoz jadvali</div>' +
+    '<div class="ptc-sub">' + (prayerLocation ? prayerLocation.city : 'Toshkent') + ' · ' + now.getDate() + '-' + ['yan','fev','mar','apr','may','iyn','iyl','avg','sen','okt','noy','dek'][now.getMonth()] + '</div></div>';
+
+  NAMOZLAR.forEach(function(n, i) {
+    var parts = n.time.split(':');
+    var nt = new Date(); nt.setHours(parseInt(parts[0],10), parseInt(parts[1],10), 0, 0);
+    var done = !!ds['n_' + n.id];
+    var status = getCurrentNamozStatus(n.id);
+    var isNext = next.namoz.id === n.id && !done;
+    var desc = NAMOZ_DESCS[n.id] || {};
+    var colors = namozColors[n.id] || { icon: 'var(--green)', bg: 'var(--green2)' };
+
+    var rowClass = 'ptc-row';
+    if (status === 'current' && !done) rowClass += ' highlight';
+    else if (status === 'late' && !done) rowClass += ' late-row';
+
+    // Badge
+    var badge = '';
+    if (done) badge = '<span class="ptc-badge ptc-badge-done">✓ O\'qildi</span>';
+    else if (status === 'current') badge = '<span class="ptc-badge ptc-badge-current">Hozir vaqti</span>';
+    else if (status === 'late') badge = '<span class="ptc-badge ptc-badge-late">Kech qolindi</span>';
+    else if (isNext) badge = '<span class="ptc-badge ptc-badge-next">Keyingi</span>';
+    else badge = '<span class="ptc-badge ptc-badge-waiting">Kutilmoqda</span>';
+
+    // Time until
+    var timeInfo = '';
+    if (!done && status === 'waiting') {
+      var minsLeft = Math.round((nt - now) / 60000);
+      if (minsLeft < 60) timeInfo = minsLeft + ' daqiqada';
+      else timeInfo = Math.floor(minsLeft/60) + ' soat ' + (minsLeft%60) + ' daqiqada';
+    } else if (!done && status === 'current') {
+      var minsElapsed = Math.round((now - nt) / 60000);
+      var minsRemaining = LATE_AFTER_MIN - minsElapsed;
+      timeInfo = minsRemaining + ' daqiqa qoldi';
+    } else if (!done && status === 'late') {
+      var minsOver = Math.round((now - nt) / 60000);
+      timeInfo = minsOver + ' daqiqa o\'tdi';
+    } else if (done) {
+      timeInfo = 'Bajarildi ✓';
+    }
+
+    html += '<div class="' + rowClass + '">' +
+      '<div class="ptc-icon" style="background:' + colors.bg + ';color:' + colors.icon + '">' + ICONS[NAMOZ_ICONS[i]] + '</div>' +
+      '<div class="ptc-info">' +
+        '<div class="ptc-name">' + n.name + '</div>' +
+        '<div class="ptc-desc">' + (desc.window || '') + '</div>' +
+        badge +
+      '</div>' +
+      '<div class="ptc-time-col">' +
+        '<div class="ptc-time">' + n.time + '</div>' +
+        '<div class="ptc-window">' + timeInfo + '</div>' +
+      '</div>' +
+      '</div>';
+  });
+  html += '</div>';
+
+  // Location update
+  html += '<div class="icon-btn-row">' +
+    '<div class="icon-btn" onclick="APP.requestLocation()">' + ICONS.compass + ' Joylashuvni yangilash</div>' +
+    '</div>';
+
+  // Why each namoz section
+  html += '<div class="section-label">Har bir namoz nima uchun?</div>';
+
+  var namozWhyColors = ['var(--blue)','var(--amber)','var(--teal)','var(--red)','var(--purple)'];
+  NAMOZLAR.forEach(function(n, i) {
+    var desc = NAMOZ_DESCS[n.id] || {};
+    html += '<div class="help-tip-card" style="border-left-color:' + namozWhyColors[i] + '">' +
+      '<div class="help-tip-title" style="color:' + namozWhyColors[i] + '">' +
+        '<span>' + ICONS[NAMOZ_ICONS[i]].replace('stroke="currentColor"','stroke="'+namozWhyColors[i]+'"') + '</span>' +
+        n.name + ' — ' + n.time +
+      '</div>' +
+      '<div class="help-tip-body">' + (desc.why || '') + '<br><strong style="color:var(--text3);font-size:10px;margin-top:4px;display:block">Vaqt oynasi: ' + (desc.window || '') + '</strong></div>' +
+      '</div>';
+  });
+
+  // Tips
+  html += '<div class="section-label">Maslahatlar</div>';
+  var tips = [
+    { title: 'Namozni vaqtida o\'qish', body: 'Har namoz uchun <strong>90 daqiqa</strong> oynasi bor. Vaqt kirishi bilan imkon bo\'lgan tezda o\'qish afzal. Kechiktirish odat bo\'lib qoladi.' },
+    { title: 'Qarz emas, tartib', body: 'O\'tkazib yuborilgan namozlar "qarz" sifatida saqlanadi. Maqsad — uni ko\'paytirmaslik, lekin botibdan o\'qish ham qazo hisoblanadi.' },
+    { title: 'Eslatmalar yoqish', body: 'Bugun tabidan <strong>Eslatmalar</strong> tugmasini bosib, brauzer bildirishnomalarini yoqing. Har namoz vaqtida signal keladi.' },
+    { title: 'Joylashuv bo\'yicha vaqtlar', body: 'Toshkentda yashasangiz, standart vaqtlar to\'g\'ri. Boshqa shaharda bo\'lsangiz, <strong>Joylashuvni yangilash</strong> tugmasini bosing.' },
+    { title: 'Yakshanba — maxsus kun', body: 'Yakshanbada faqat namoz talab qilinadi. Vazifalar bo\'lmaydi. Xohlaganing qil — bu ruhiy tiklanish kuni.' },
+  ];
+  tips.forEach(function(tip) {
+    html += '<div class="help-tip-card">' +
+      '<div class="help-tip-title">' + tip.title + '</div>' +
+      '<div class="help-tip-body">' + tip.body + '</div>' +
+      '</div>';
+  });
+
+  document.getElementById('helpContent').innerHTML = html;
+
+  // Live countdown timer
+  if (helpCountdownTimer) clearInterval(helpCountdownTimer);
+  helpCountdownTimer = setInterval(function() {
+    var el = document.getElementById('helpCountdown');
+    if (!el) { clearInterval(helpCountdownTimer); return; }
+    var nextNow = getNextNamoz();
+    var ms = nextNow.time - new Date();
+    el.textContent = formatCountdown(ms);
+  }, 1000);
 }
 
 // ============================================================
@@ -1523,6 +1697,7 @@ function renderCurrentPage() {
   else if (currentPage === 'journal') renderJournal();
   else if (currentPage === 'stats') renderStats();
   else if (currentPage === 'calendar') renderCalendar();
+  else if (currentPage === 'help') renderHelp();
   if (modalKey) renderModal(modalKey);
 }
 
