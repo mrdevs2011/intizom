@@ -2012,7 +2012,13 @@ function renderAndoza() {
 
   // Tips
   html += '<div class="section-label">Maslahatlar</div>';
-  tips.forEach(function(tip){
+  var andozaTips = [
+    { title: "Bomdoddan keyingi blok eng muhim", body: "Ertalab 03:30–07:30 — bu <strong>Deep Work</strong> vaqti. Miyangiz eng toza, diqqat eng yuqori. JS ni shu vaqtda oʼrganing." },
+    { title: "Namoz bloklari qisqa, lekin zarur", body: "Har namoz uchun 10–20 daqiqa ajratilgan. Namoz oʼqib, 3–5 daqiqa zikr qiling. Keyin ishga qayting." },
+    { title: "Vim — alohida 1 soat", body: "Tushdan keyin 13:30–14:30 da Vim kursi. Bu vaqt miyangiz biroz charchagan, ammo mexanik mashq uchun ideal." },
+    { title: "Kecha — Quron va Hadis", body: "20:00–22:00 da ekrandan uzoq turing — Quron tilovat qiling, hadis oʼqing. Bu uyqu sifatini oshiradi." },
+  ];
+  andozaTips.forEach(function(tip){
     html += '<div class="andoza-tip"><strong>' + tip.title + '</strong><br>' + tip.body + '</div>';
   });
 
