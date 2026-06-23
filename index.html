@@ -231,6 +231,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .journal-entry-edit{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:13px;font-family:var(--font);resize:vertical;min-height:80px;outline:none;transition:border-color 0.2s;margin-top:10px;display:none;}
 .journal-entry-edit.open{display:block;}
 .journal-entry.expanded{border-color:var(--border2);}
+.journal-entries-list{display:flex;flex-direction:column;gap:8px;margin:10px 0;}
+.journal-entry-item{background:var(--bg3);border:0.5px solid var(--border);border-radius:9px;padding:10px 12px;}
+.journal-entry-item-time{font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:4px;letter-spacing:0.03em;}
+.journal-entry-item-text{font-size:13px;color:var(--text2);line-height:1.55;white-space:pre-wrap;}
 
 /* === HELP PAGE === */
 .help-header{background:linear-gradient(145deg,var(--bg2),var(--bg3));border:0.5px solid var(--border2);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
@@ -637,6 +641,21 @@ function formatKey(key) {
   var dayNames = ['Ya','Du','Se','Ch','Pa','Ju','Sh'];
   return dayNames[d.getDay()] + ', ' + d.getDate() + ' ' + mNames[d.getMonth()];
 }
+function escapeHtml(s) { return (s || '').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+// Jurnal yozuvlari ro'yxati. Eski hujjatlarda 'journal' oddiy matn (string)
+// edi — moslik uchun uni bitta yozuvli ro'yxatga aylantiramiz.
+function getJournalEntries(ds) {
+  if (!ds || !ds.journal) return [];
+  if (Array.isArray(ds.journal)) return ds.journal;
+  if (typeof ds.journal === 'string') return ds.journal ? [{ t: ds.journal, ts: null }] : [];
+  return [];
+}
+function formatEntryTime(ts) {
+  if (!ts) return '';
+  var d = new Date(ts);
+  return pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+var JOURNAL_MAX_ENTRIES = 30;
 
 // ============================================================
 // ANTI-CHEAT
@@ -1064,22 +1083,35 @@ APP.toggleTask = function(id, key) {
   if (modalKey === key) renderModal(key);
 };
 
-APP.saveJournal = function(key, value) {
-  if (!isOnline) { showToast("Offline. Journal saqlanmadi."); return; }
-  if (isPastDayLocked(key)) return;
+APP.addJournalEntry = function(key, value) {
+  value = (value || '').trim();
+  if (!value) return;
+  if (!isOnline) { showToast("Offline. Yozuv saqlanmadi."); return; }
+  if (isPastDayLocked(key)) { showToast("Bu kun qulflangan."); return; }
   if (!state[key]) state[key] = {};
-  state[key]['journal'] = value;
+  var entries = getJournalEntries(state[key]).slice();
+  entries.push({ t: value, ts: Date.now() });
+  if (entries.length > JOURNAL_MAX_ENTRIES) entries = entries.slice(entries.length - JOURNAL_MAX_ENTRIES);
+  state[key]['journal'] = entries;
   saveDay(key, state[key]);
+  renderCurrentPage();
+  if (modalKey === key) renderModal(key);
 };
 
-APP.saveWeeklyJournal = function(weekKey, value) {
+APP.addWeeklyJournalEntry = function(weekKey, value) {
+  value = (value || '').trim();
+  if (!value) return;
   var fm = window.__fm;
   if (!isOnline || !db || !fm) { showToast("Offline. Haftalik jurnal saqlanmadi."); return; }
-  if (!state['_week_' + weekKey]) state['_week_' + weekKey] = {};
-  state['_week_' + weekKey]['journal'] = value;
+  var sKey = '_week_' + weekKey;
+  if (!state[sKey]) state[sKey] = {};
+  var entries = getJournalEntries(state[sKey]).slice();
+  entries.push({ t: value, ts: Date.now() });
+  if (entries.length > JOURNAL_MAX_ENTRIES) entries = entries.slice(entries.length - JOURNAL_MAX_ENTRIES);
+  state[sKey]['journal'] = entries;
   var docRef = fm.doc(db, 'users', USER_ID, 'weekly', weekKey);
-  fm.setDoc(docRef, state['_week_' + weekKey], { merge: true })
-    .then(function(){ showToast('Haftalik jurnal saqlandi ✓'); })
+  fm.setDoc(docRef, state[sKey], { merge: true })
+    .then(function(){ showToast('Yozuv qo\'shildi ✓'); renderCurrentPage(); })
     .catch(function(err){
       var emsg = err ? (err.message || '') : '';
       if (_adblockDetected || emsg.indexOf('BLOCKED') > -1 ||
@@ -1143,11 +1175,6 @@ APP.setJournalSearch = function(val) {
 APP.toggleJournalEntry = function(key) {
   expandedJournalKey = (expandedJournalKey === key) ? null : key;
   renderJournal();
-};
-
-APP.saveJournalEntry = function(key, val) {
-  APP.saveJournal(key, val);
-  showToast('Jurnal yozuvi saqlandi ✓');
 };
 
 // ============================================================
@@ -1372,9 +1399,8 @@ function renderWeekly() {
       if (ds['n_' + n.id]) totalNamozThisWeek++;
     });
   });
-  var weeklyJournal = '';
   var wj = state['_week_' + weekKey];
-  if (wj && wj.journal) weeklyJournal = wj.journal;
+  var weeklyEntries = getJournalEntries(wj);
   var html = '<div class="weekly-review-card">';
   html += '<div class="wr-week-nav">' +
     '<button class="wr-nav-btn" onclick="APP.weeklyPrev()">&#8249;</button>' +
@@ -1408,10 +1434,18 @@ function renderWeekly() {
     '<div class="wr-stat"><div class="wr-stat-val">' + totalNamozThisWeek + '/' + totalNamozPossible + '</div><div class="wr-stat-lbl">Namoz</div></div>' +
     '</div>';
   html += '<div class="wr-journal-section">' +
-    '<div class="wr-journal-title">' + (weeklyOffset === 0 ? 'Bu hafta haqida' : 'Hafta sharhi') + '</div>' +
-    '<textarea class="wr-journal-textarea" id="weeklyJournalInput" placeholder="Bu hafta qanday o\'tdi? Nimani yaxshi qilding? Nimani yaxshilash kerak?">' +
-    (weeklyJournal ? weeklyJournal.replace(/</g,'&lt;').replace(/>/g,'&gt;') : '') + '</textarea>' +
-    '<button class="wr-journal-save" onclick="APP.saveWeeklyJournal(\'' + weekKey + '\', document.getElementById(\'weeklyJournalInput\').value)">Saqlash</button>' +
+    '<div class="wr-journal-title">' + (weeklyOffset === 0 ? 'Bu hafta haqida' : 'Hafta sharhi') + '</div>';
+  if (weeklyEntries.length) {
+    html += '<div class="journal-entries-list">';
+    weeklyEntries.slice().reverse().forEach(function(en) {
+      html += '<div class="journal-entry-item">' +
+        (en.ts ? '<div class="journal-entry-item-time">' + formatEntryTime(en.ts) + '</div>' : '') +
+        '<div class="journal-entry-item-text">' + escapeHtml(en.t) + '</div></div>';
+    });
+    html += '</div>';
+  }
+  html += '<textarea class="wr-journal-textarea" id="weeklyJournalInput" placeholder="Bu hafta qanday o\'tdi? Nimani yaxshi qilding? Nimani yaxshilash kerak?"></textarea>' +
+    '<button class="wr-journal-save" onclick="APP.addWeeklyJournalEntry(\'' + weekKey + '\', document.getElementById(\'weeklyJournalInput\').value); document.getElementById(\'weeklyJournalInput\').value=\'\';">Qo\'shish</button>' +
     '</div>';
   html += '</div>';
   html += '<div class="section-label">Namoz tahlili</div><div class="namoz-stats-table">';
@@ -1446,18 +1480,20 @@ function renderJournal() {
   while (d <= today) {
     var key = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
     var ds = state[key] || {};
-    allEntries.push({ key: key, text: ds.journal || '', complete: isDayComplete(key), partial: isDayPartial(key) });
+    var entries = getJournalEntries(ds);
+    allEntries.push({ key: key, entries: entries, complete: isDayComplete(key), partial: isDayPartial(key) });
     d.setDate(d.getDate() + 1);
   }
   var filtered = allEntries.filter(function(e) {
-    if (!journalSearch) return e.text.length > 0 || e.key === todayKey();
-    return e.text.toLowerCase().indexOf(journalSearch.toLowerCase()) > -1;
+    var joined = e.entries.map(function(en){ return en.t; }).join(' ');
+    if (!journalSearch) return joined.length > 0 || e.key === todayKey();
+    return joined.toLowerCase().indexOf(journalSearch.toLowerCase()) > -1;
   }).reverse();
-  var withText = allEntries.filter(function(e){ return e.text.length > 0; }).length;
+  var withText = allEntries.filter(function(e){ return e.entries.length > 0; }).length;
   var html = '';
   html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">' +
     '<div style="font-size:22px;font-weight:800;color:var(--text);font-family:var(--mono);">' + withText + '</div>' +
-    '<div style="font-size:12px;color:var(--text3);">yozuv</div>' +
+    '<div style="font-size:12px;color:var(--text3);">kun yozilgan</div>' +
     '</div>';
   html += '<input type="text" class="journal-search" placeholder="Jurnal ichida qidirish..." oninput="APP.setJournalSearch(this.value)" value="' + journalSearch.replace(/"/g,'&quot;') + '">';
   if (filtered.length === 0) {
@@ -1467,23 +1503,32 @@ function renderJournal() {
       var isExpanded = expandedJournalKey === e.key;
       var isLocked = isPastDayLocked(e.key);
       var dotColor = e.complete ? 'var(--green)' : (e.partial ? 'var(--teal)' : 'var(--red2)');
+      var lastEntry = e.entries.length ? e.entries[e.entries.length - 1] : null;
       html += '<div class="journal-entry ' + (isExpanded?'expanded':'') + '" onclick="APP.toggleJournalEntry(\'' + e.key + '\')">' +
         '<div class="journal-entry-header">' +
         '<div class="journal-entry-day">' + formatKey(e.key) + '</div>' +
-        '<div class="journal-entry-date">' + formatKey(e.key) + '</div>' +
+        '<div class="journal-entry-date">' + (e.entries.length > 1 ? e.entries.length + ' yozuv' : '') + '</div>' +
         '<div class="journal-entry-badge" style="background:' + dotColor + '"></div>' +
         '</div>';
-      if (e.text) {
-        html += '<div class="journal-entry-text">' + e.text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+      if (lastEntry) {
+        html += '<div class="journal-entry-text">' + escapeHtml(lastEntry.t) + '</div>';
       } else {
         html += '<div class="journal-entry-text" style="color:var(--text3);font-style:italic">Yozuv yo\'q — bosing va yozing...</div>';
       }
       if (isExpanded) {
-        html += '<textarea class="journal-entry-edit open" placeholder="Bu kun haqida yozing..." ' +
-          (isLocked ? 'disabled style="opacity:0.4"' : '') +
-          ' onblur="APP.saveJournalEntry(\'' + e.key + '\', this.value)" onclick="event.stopPropagation()">' +
-          (e.text ? e.text.replace(/</g,'&lt;').replace(/>/g,'&gt;') : '') + '</textarea>';
-        if (isLocked) {
+        if (e.entries.length > 1) {
+          html += '<div class="journal-entries-list" onclick="event.stopPropagation()">';
+          e.entries.slice(0, -1).reverse().forEach(function(en) {
+            html += '<div class="journal-entry-item">' +
+              (en.ts ? '<div class="journal-entry-item-time">' + formatEntryTime(en.ts) + '</div>' : '') +
+              '<div class="journal-entry-item-text">' + escapeHtml(en.t) + '</div></div>';
+          });
+          html += '</div>';
+        }
+        if (!isLocked) {
+          html += '<textarea class="journal-entry-edit open" id="journalAdd_' + e.key + '" placeholder="Yangi yozuv qo\'shing..." onclick="event.stopPropagation()"></textarea>' +
+            '<button class="wr-journal-save" onclick="event.stopPropagation();APP.addJournalEntry(\'' + e.key + '\', document.getElementById(\'journalAdd_' + e.key + '\').value); document.getElementById(\'journalAdd_' + e.key + '\').value=\'\';">Qo\'shish</button>';
+        } else {
           html += '<div style="font-size:11px;color:var(--text3);margin-top:8px;">🔒 Bu kun qulflangan.</div>';
         }
       }
@@ -1676,10 +1721,20 @@ function renderModal(key) {
     });
     html += '</div>';
   }
+  var modalEntries = getJournalEntries(ds);
+  html += '<div class="section-label">Kundalik</div>';
+  if (modalEntries.length) {
+    html += '<div class="journal-entries-list">';
+    modalEntries.slice().reverse().forEach(function(en) {
+      html += '<div class="journal-entry-item">' +
+        (en.ts ? '<div class="journal-entry-item-time">' + formatEntryTime(en.ts) + '</div>' : '') +
+        '<div class="journal-entry-item-text">' + escapeHtml(en.t) + '</div></div>';
+    });
+    html += '</div>';
+  }
   if (!locked) {
-    html += '<div class="section-label">Kundalik</div>' +
-      '<textarea class="modal-journal" placeholder="Bugun qanday o\'tdi? Qisqacha yoz..." onblur="APP.saveJournal(\'' + key + '\', this.value)">' +
-      (ds.journal ? ds.journal.replace(/</g,'&lt;').replace(/>/g,'&gt;') : '') + '</textarea>';
+    html += '<textarea class="modal-journal" id="modalJournalInput" placeholder="Bugun qanday o\'tdi? Qisqacha yoz...">' + '</textarea>' +
+      '<button class="wr-journal-save" onclick="APP.addJournalEntry(\'' + key + '\', document.getElementById(\'modalJournalInput\').value); document.getElementById(\'modalJournalInput\').value=\'\';">Qo\'shish</button>';
   }
   document.getElementById('modalContent').innerHTML = html;
 }
