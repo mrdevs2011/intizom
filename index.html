@@ -471,20 +471,25 @@ const USER_ID = 'user_main';
 
 // Reklama bloker aniqlash
 var _adblockDetected = false;
-var _adblockCheckDone = false;
 (function(){
-  // Firestore WebChannel endpoint'ini to'g'ridan-to'g'ri test qilish
-  var testUrl = 'https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&RID=rpc&CVER=22&zx=adtest&t=1';
-  fetch(testUrl, { method: 'GET', mode: 'no-cors', cache: 'no-store' })
-    .then(function(){ _adblockCheckDone = true; })
-    .catch(function(){
-      _adblockDetected = true;
-      _adblockCheckDone = true;
-    });
-  // 3 soniyadan keyin ham javob kelmasa — bloklangan deb hisoblash
-  setTimeout(function(){
-    if (!_adblockCheckDone) { _adblockDetected = true; _adblockCheckDone = true; }
-  }, 3000);
+  // Kichik bait yuk bilan oddiy so'rov — adblocker bloklasa ERR_BLOCKED_BY_CLIENT
+  // no-cors mode da 400/200 farq qilmaydi, faqat network error ushlaydi
+  // Shuning uchun XMLHttpRequest ishlatamiz — u blocked bo'lsa status=0 bo'ladi
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Fintizom-d2c0e%2Fdatabases%2F(default)&RID=rpc&CVER=22&t=1', true);
+  xhr.timeout = 4000;
+  xhr.onload = function() {
+    // 400 yoki boshqa HTTP xato — server javob berdi, adblocker yo'q
+    _adblockDetected = false;
+  };
+  xhr.onerror = function() {
+    // Network error — adblocker blokladi
+    _adblockDetected = true;
+  };
+  xhr.ontimeout = function() {
+    _adblockDetected = true;
+  };
+  try { xhr.send(); } catch(e) { _adblockDetected = true; }
 })();
 
 // Firebase modular SDK init (type="module" script yuklangandan keyin)
@@ -940,7 +945,8 @@ function startFirestoreListener() {
     var colRef = fm.collection(db, 'users', USER_ID, 'days');
     unsubscribe = fm.onSnapshot(colRef,
       function(snapshot) {
-        setOnline(true);
+        // Adblocker cache dan javob berishi mumkin — haqiqiy online emas
+        setOnline(!_adblockDetected);
         snapshot.docChanges().forEach(function(change) {
           if (change.type === 'removed') delete state[change.doc.id];
           else state[change.doc.id] = change.doc.data();
