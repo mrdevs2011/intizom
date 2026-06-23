@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Intizom — 69 Kun</title>
+<title>Intizom — MR</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -57,12 +57,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .streak-row{display:flex;align-items:baseline;gap:8px;margin-bottom:2px;}
 .streak-num{font-size:54px;font-weight:800;color:var(--green);line-height:1;font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.03em;}
 .streak-suffix{font-size:17px;color:var(--text2);font-weight:500;}
-.streak-sub{font-size:12px;color:var(--text3);margin-bottom:16px;font-family:var(--mono);}
-.progress-wrap{margin-bottom:12px;}
-.progress-bar{height:2px;background:var(--bg4);border-radius:2px;overflow:hidden;}
-.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--teal));transition:width 0.8s cubic-bezier(0.4,0,0.2,1);}
-.header-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:6px;}
-.header-meta .val{color:var(--text2);}
 
 /* === STATS MINI === */
 .stats-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
@@ -352,7 +346,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
         <path d="M12 48L28 32L38 42L52 20" stroke="#1D9E75" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
         <circle cx="52" cy="20" r="5" fill="#1D9E75"/>
       </svg>
-      <span class="brand-name">Intizom</span>
+      <span class="brand-name">Intizom — MR</span>
       <div class="brand-status" style="margin-left:4px;">
         <div class="status-dot" id="statusDot"></div>
         <span class="status-label" id="statusLabel">sync</span>
@@ -413,8 +407,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 <div class="notif-toast" id="notifToast"></div>
 <div class="saving-pill" id="savingPill">Saqlandi</div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script type="module">
+// ── Firebase v10 modular SDK ──────────────────────────────────
+import { initializeApp }                          from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, initializeFirestore,
+         persistentLocalCache, persistentMultipleTabManager,
+         collection, doc, onSnapshot, setDoc }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// Expose to global scope so non-module code can reach them
+window.__firebaseModules = { initializeApp, initializeFirestore,
+  persistentLocalCache, persistentMultipleTabManager,
+  getFirestore, collection, doc, onSnapshot, setDoc };
+</script>
 
 <script>
 // ============================================================
@@ -425,29 +429,53 @@ var APP = {};
 // ============================================================
 // CONFIG
 // ============================================================
-const firebaseConfig = {
-  apiKey: "AIzaSyB02ZyUGwlpu6w19pu5nuvNnTaQwV1aMSo",
-  authDomain: "intizom-d2c0e.firebaseapp.com",
-  projectId: "intizom-d2c0e",
-  storageBucket: "intizom-d2c0e.firebasestorage.app",
-  messagingSenderId: "381400202701",
-  appId: "1:381400202701:web:4db3e0b777532c9aa99884"
-};
-
 var db = null;
 const USER_ID = 'user_main';
-try {
-  firebase.initializeApp(firebaseConfig);
-  db = firebase.firestore();
-  db.enablePersistence({ synchronizeTabs: true }).catch(function(){});
-} catch(e) { console.warn('Firebase init failed:', e); }
+
+// Reklama bloker aniqlash
+var _adblockDetected = false;
+(function(){
+  var testUrl = 'https://firestore.googleapis.com/favicon.ico';
+  fetch(testUrl, { method: 'HEAD', mode: 'no-cors' }).catch(function(){
+    _adblockDetected = true;
+  });
+})();
+
+// Firebase modular SDK init (type="module" script yuklangandan keyin)
+function initFirebase() {
+  var fm = window.__firebaseModules;
+  if (!fm) { setTimeout(initFirebase, 50); return; }
+  try {
+    var app = fm.initializeApp({
+      apiKey:            "AIzaSyB02ZyUGwlpu6w19pu5nuvNnTaQwV1aMSo",
+      authDomain:        "intizom-d2c0e.firebaseapp.com",
+      projectId:         "intizom-d2c0e",
+      storageBucket:     "intizom-d2c0e.firebasestorage.app",
+      messagingSenderId: "381400202701",
+      appId:             "1:381400202701:web:4db3e0b777532c9aa99884"
+    });
+    // Yangi cache API — deprecation warning yo'q
+    db = fm.initializeFirestore(app, {
+      cache: fm.persistentLocalCache({
+        tabManager: fm.persistentMultipleTabManager()
+      })
+    });
+    window.__db = db;
+    window.__fm = fm;
+  } catch(e) {
+    console.warn('Firebase init failed:', e);
+  }
+  setOnline(false);
+  startFirestoreListener();
+}
+initFirebase();
 
 // ============================================================
 // CONSTANTS
 // ============================================================
 const START = new Date('2026-06-23T00:00:00');
 const END   = new Date('2026-09-01T00:00:00');
-const TOTAL_DAYS = 69;
+const TOTAL_DAYS = 70; // loyiha uchun yetarli maksimum
 const LATE_AFTER_MIN = 90;
 const EDIT_WINDOW_DAYS = 1;
 
@@ -481,10 +509,7 @@ const TASKS = [
 const QUOTES = [
   '&ldquo;Albatta, mashaqqat bilan birga yengillik bordir.&rdquo; &mdash; Sharh, 5',
   'Kichik qadamlar, lekin har kuni &mdash; bu katta sakrashdan kuchliroqdir.',
-  'Intizom &mdash; bu o\'zing bilan qilgan va\'dangga sodiq qolish san\'atidir.',
-  'Bugungi mehnat &mdash; ertangi erkinlik.',
-  '&ldquo;Vaqtingni g\'animat bil, u qaytib kelmaydigan boylikdir.&rdquo;',
-  '69 kun &mdash; bu umrning bir nafasi, lekin natijasi umrbod qoladi.',
+  'Intizom — bu o\'zing bilan qilgan va\'dangga sodiq qolish san\'atidir.',
   'Har bir bajarilgan namoz &mdash; qalbingdagi tinchlik zaxirasi.',
   'Sustkashlik bugun yengil, ertaga og\'ir bo\'ladi.',
   'Kichik intizomsizliklar yig\'ilib, katta pushaymonlikka aylanadi.',
@@ -546,12 +571,7 @@ function todayKey() {
   return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
 }
 function pad(n){ return n < 10 ? '0'+n : ''+n; }
-function getDayNum() {
-  return Math.min(Math.max(Math.floor((new Date() - START) / 86400000) + 1, 1), TOTAL_DAYS);
-}
-function getDaysLeft() {
-  return Math.max(0, Math.ceil((END - new Date()) / 86400000));
-}
+// getDayNum / getDaysLeft olib tashlandi — endi ishlatilmaydi
 function isSunday(key) {
   return new Date(key + 'T12:00:00').getDay() === 0;
 }
@@ -867,28 +887,51 @@ function setOnline(on) {
 function startFirestoreListener() {
   if (!db) { setOnline(false); renderCurrentPage(); return; }
   if (unsubscribe) { try { unsubscribe(); } catch(e){} }
+  var fm = window.__fm;
+  if (!fm) { setOnline(false); renderCurrentPage(); return; }
   try {
-    unsubscribe = db.collection('users').doc(USER_ID).collection('days')
-      .onSnapshot(function(snapshot) {
+    var colRef = fm.collection(db, 'users', USER_ID, 'days');
+    unsubscribe = fm.onSnapshot(colRef,
+      function(snapshot) {
         setOnline(true);
         snapshot.docChanges().forEach(function(change) {
           if (change.type === 'removed') delete state[change.doc.id];
           else state[change.doc.id] = change.doc.data();
         });
         renderCurrentPage();
-      }, function() {
-        setOnline(false);
+      },
+      function(err) {
+        // ERR_BLOCKED_BY_CLIENT (adblocker) yoki tarmoq xatosi
+        if (err && err.code === 'unavailable') {
+          setOnline(false);
+        } else {
+          setOnline(false);
+          if (_adblockDetected) {
+            showToast("Reklama bloker Firestore ni to'sib qo'ydi — offline rejim.");
+          }
+        }
         renderCurrentPage();
-      });
+      }
+    );
   } catch(e) { setOnline(false); renderCurrentPage(); }
 }
+
 function saveDay(key, data) {
-  if (!db || !isOnline) { showToast("Tarmoq yo'q. Ma'lumot saqlanmadi."); return; }
+  var fm = window.__fm;
+  if (!db || !fm) { showToast("Firebase yuklanmadi."); return; }
+  if (!isOnline) { showToast("Offline. Ma'lumot cache ga saqlandi."); return; }
   showSaving();
-  db.collection('users').doc(USER_ID).collection('days').doc(key)
-    .set(data, { merge: true })
+  var docRef = fm.doc(db, 'users', USER_ID, 'days', key);
+  fm.setDoc(docRef, data, { merge: true })
     .then(function(){ hideSaving(); })
-    .catch(function(err){ hideSaving(); showToast('Saqlash xatosi: ' + err.message); });
+    .catch(function(err){
+      hideSaving();
+      if (err && (err.code === 'unavailable' || err.message.includes('BLOCKED'))) {
+        showToast("Reklama bloker to'sdi. Brauzer keshida saqlandi.");
+      } else {
+        showToast('Saqlash xatosi: ' + (err.message || err));
+      }
+    });
 }
 function showSaving() {
   var pill = document.getElementById('savingPill');
@@ -956,13 +999,14 @@ APP.saveJournal = function(key, value) {
 };
 
 APP.saveWeeklyJournal = function(weekKey, value) {
-  if (!isOnline) { showToast("Offline. Haftalik jurnal saqlanmadi."); return; }
+  var fm = window.__fm;
+  if (!isOnline || !db || !fm) { showToast("Offline. Haftalik jurnal saqlanmadi."); return; }
   if (!state['_week_' + weekKey]) state['_week_' + weekKey] = {};
   state['_week_' + weekKey]['journal'] = value;
-  db.collection('users').doc(USER_ID).collection('days').doc('_week_' + weekKey)
-    .set(state['_week_' + weekKey], { merge: true })
+  var docRef = fm.doc(db, 'users', USER_ID, 'days', '_week_' + weekKey);
+  fm.setDoc(docRef, state['_week_' + weekKey], { merge: true })
     .then(function(){ showToast('Haftalik jurnal saqlandi ✓'); })
-    .catch(function(err){ showToast('Saqlash xatosi: ' + err.message); });
+    .catch(function(err){ showToast('Saqlash xatosi: ' + (err.message || err)); });
 };
 
 APP.openModal = function(key) {
@@ -1052,28 +1096,24 @@ function startNotifWatcher() {
 // RENDER: TODAY
 // ============================================================
 function dailyQuote() {
-  return QUOTES[getDayNum() % QUOTES.length];
+  var idx = new Date().getDate() + new Date().getMonth() * 31;
+  return QUOTES[idx % QUOTES.length];
 }
 
 function renderToday() {
   var tk = todayKey();
   var ds = state[tk] || {};
-  var dayNum = getDayNum();
-  var daysLeft = getDaysLeft();
   var streak = getStreak();
   var totalDone = getTotalComplete();
-  var pct = Math.min(100, Math.round(((dayNum - 1) / TOTAL_DAYS) * 100));
   var namozDone = NAMOZLAR.filter(function(n){ return ds['n_' + n.id]; }).length;
   var sunday = isSunday(tk);
-  var successPct = dayNum > 1 ? Math.round((totalDone / (dayNum - 1)) * 100) : 0;
+  var daysPassed = Math.max(0, Math.round((new Date() - START) / 86400000));
+  var successPct = daysPassed > 0 ? Math.round((totalDone / daysPassed) * 100) : 0;
   var debts = getDebtItems();
 
   var html = '';
   html += '<div class="header-card">' +
     '<div class="streak-row"><span class="streak-num">' + streak + '</span><span class="streak-suffix">kun ketma-ket</span></div>' +
-    '<div class="streak-sub">' + dayNum + '-kun · ' + daysLeft + ' kun qoldi</div>' +
-    '<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
-    '<div class="header-meta"><span class="val">' + pct + '%</span> yakunlandi · Sentabr 1 <span class="val">gacha</span></div></div>' +
     '</div>';
 
   html += '<div class="quote-card">' + dailyQuote() + '</div>';
@@ -1203,10 +1243,9 @@ function renderDebt() {
     });
     var sortedKeys = Object.keys(groups).sort(function(a, b){ return b > a ? 1 : -1; });
     sortedKeys.forEach(function(key) {
-      var dayNum = Math.floor((keyToDate(key) - START) / 86400000) + 1;
       var clickable = !isPastDayLocked(key);
       html += '<div class="debt-group">' +
-        '<div class="debt-group-label">' + dayNum + '-kun &nbsp;·&nbsp; ' + formatKey(key) + (clickable ? ' &nbsp;·&nbsp; <span style="color:var(--green);cursor:pointer" onclick="APP.openModal(\'' + key + '\')">tahrirlash →</span>' : ' &nbsp;<span style="color:var(--text3);font-size:9px">qulflangan</span>') + '</div>';
+        '<div class="debt-group-label">' + formatKey(key) + (clickable ? ' &nbsp;·&nbsp; <span style="color:var(--green);cursor:pointer" onclick="APP.openModal(\'' + key + '\')">tahrirlash →</span>' : ' &nbsp;<span style="color:var(--text3);font-size:9px">qulflangan</span>') + '</div>';
       groups[key].forEach(function(d) {
         html += '<div class="debt-item">' +
           '<div class="debt-item-day">' + (d.type === 'namoz' ? '🕌' : '📚') + '</div>' +
@@ -1336,20 +1375,19 @@ function renderJournal() {
   var html = '';
   html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">' +
     '<div style="font-size:22px;font-weight:800;color:var(--text);font-family:var(--mono);">' + withText + '</div>' +
-    '<div style="font-size:12px;color:var(--text3);">yozuv · ' + getDayNum() + ' kundan</div>' +
+    '<div style="font-size:12px;color:var(--text3);">yozuv</div>' +
     '</div>';
   html += '<input type="text" class="journal-search" placeholder="Jurnal ichida qidirish..." oninput="APP.setJournalSearch(this.value)" value="' + journalSearch.replace(/"/g,'&quot;') + '">';
   if (filtered.length === 0) {
     html += '<div class="journal-empty">Hech qanday yozuv topilmadi.</div>';
   } else {
     filtered.forEach(function(e) {
-      var dayNum = Math.floor((keyToDate(e.key) - START) / 86400000) + 1;
       var isExpanded = expandedJournalKey === e.key;
       var isLocked = isPastDayLocked(e.key);
       var dotColor = e.complete ? 'var(--green)' : (e.partial ? 'var(--teal)' : 'var(--red2)');
       html += '<div class="journal-entry ' + (isExpanded?'expanded':'') + '" onclick="APP.toggleJournalEntry(\'' + e.key + '\')">' +
         '<div class="journal-entry-header">' +
-        '<div class="journal-entry-day">' + dayNum + '-kun</div>' +
+        '<div class="journal-entry-day">' + formatKey(e.key) + '</div>' +
         '<div class="journal-entry-date">' + formatKey(e.key) + '</div>' +
         '<div class="journal-entry-badge" style="background:' + dotColor + '"></div>' +
         '</div>';
@@ -1379,8 +1417,8 @@ function renderJournal() {
 function renderStats() {
   var streak = getStreak();
   var totalDone = getTotalComplete();
-  var dayNum = getDayNum();
-  var successPct = dayNum > 1 ? Math.round((totalDone / (dayNum - 1)) * 100) : 0;
+  var daysPassed = Math.max(0, Math.round((new Date() - START) / 86400000));
+  var successPct = daysPassed > 0 ? Math.round((totalDone / daysPassed) * 100) : 0;
   var debts = getDebtItems();
   var namozStats = getNamozStats();
   var bestStreak = 0, curS = 0;
@@ -1398,7 +1436,7 @@ function renderStats() {
   html += '<div class="stats-big-grid">' +
     '<div class="stat-big accent-green"><div class="stat-big-val">' + streak + '</div><div class="stat-big-lbl">Joriy Streak</div><div class="stat-big-sub">kun uzluksiz</div></div>' +
     '<div class="stat-big accent-blue"><div class="stat-big-val">' + bestStreak + '</div><div class="stat-big-lbl">Eng Uzun</div><div class="stat-big-sub">streak</div></div>' +
-    '<div class="stat-big accent-green"><div class="stat-big-val">' + totalDone + '</div><div class="stat-big-lbl">Mukammal Kun</div><div class="stat-big-sub">/ ' + (dayNum-1) + ' o\'tdi</div></div>' +
+    '<div class="stat-big accent-green"><div class="stat-big-val">' + totalDone + '</div><div class="stat-big-lbl">Mukammal Kun</div><div class="stat-big-sub">/ ' + daysPassed + ' o\'tdi</div></div>' +
     '<div class="stat-big ' + (successPct >= 80 ? 'accent-green' : successPct >= 50 ? 'accent-amber' : 'accent-red') + '"><div class="stat-big-val">' + successPct + '%</div><div class="stat-big-lbl">Umumiy Natija</div><div class="stat-big-sub">muvaffaqiyat</div></div>' +
     '</div>';
   html += '<div class="stats-big-grid">' +
@@ -1520,10 +1558,8 @@ function renderModal(key) {
   var dayNames = ['Yakshanba','Dushanba','Seshanba','Chorshanba','Payshanba','Juma','Shanba'];
   var mNames = ['yan','fev','mar','apr','may','iyn','iyl','avg','sen','okt','noy','dek'];
   var label = dayNames[dateObj.getDay()] + ', ' + dateObj.getDate() + ' ' + mNames[dateObj.getMonth()];
-  var dayNum = Math.floor((dateObj - START) / 86400000) + 1;
   var locked = isPastDayLocked(key);
-  var html = '<div class="modal-title">' + dayNum + '-kun' + (locked ? ' &nbsp;<span style="font-size:13px;color:var(--text3);font-weight:500">qulflangan</span>' : '') + '</div>' +
-    '<div class="modal-date">' + label + '</div>';
+  var html = '<div class="modal-title">' + label + (locked ? ' &nbsp;<span style="font-size:13px;color:var(--text3);font-weight:500">qulflangan</span>' : '') + '</div>';
   if (locked) {
     html += '<div class="modal-locked-banner">' +
       '<div class="modal-locked-icon" style="color:var(--text3)">' + ICONS.lock + '</div>' +
@@ -1747,9 +1783,9 @@ function closeModal() {
 // INIT
 // ============================================================
 loadSavedPrayerTimes();
-setOnline(false);
-startFirestoreListener();
+renderCurrentPage(); // dastlabki render (Firebase kelgunga qadar)
 if ('Notification' in window && Notification.permission === 'granted') startNotifWatcher();
+// initFirebase() yuqorida chaqirilgan — u setOnline + startFirestoreListener ni o'z ichiga oladi
 </script>
 </body>
 </html>
