@@ -748,7 +748,7 @@ function formatCountdown(ms) {
 }
 
 // ============================================================
-// PRAYER TIMES — ISLOM.UZ STATIC TABLE (23 iyun – 1 sentabr 2026)
+// PRAYER TIMES — ISLOM.UZ STATIC TABLE — ANDIJON (23 iyun – 1 sentabr 2026)
 // ============================================================
 const ISLOM_TIMES = {
   "2026-06-23":["04:40","12:13","17:27","19:50","21:30"],
@@ -836,7 +836,7 @@ function loadTodayPrayerTimes() {
       { id: 'shom',   name: 'Shom',   time: t[3] },
       { id: 'xufton', name: 'Xufton', time: t[4] },
     ];
-    prayerLocation = { city: 'Toshkent (islom.uz)' };
+    prayerLocation = { city: 'Andijon (islom.uz)' };
   }
   // else DEFAULT_TIMES already set
 }
@@ -847,7 +847,7 @@ function loadSavedPrayerTimes() {
 }
 
 APP.requestLocation = function() {
-  showToast('Vaqtlar islom.uz dan olingan — Toshkent uchun aniq ✓');
+  showToast('Vaqtlar islom.uz dan olingan — Andijon uchun aniq ✓');
 };
 
 // ============================================================
@@ -1098,7 +1098,7 @@ function renderToday() {
 
   html += '<div class="prayer-location-card">' +
     '<div class="prayer-location-icon">' + ICONS.pin + '</div>' +
-    '<div class="prayer-location-text">Toshkent vaqtlari</div>' +
+    '<div class="prayer-location-text">Andijon vaqtlari</div>' +
     '<div class="prayer-location-val" style="color:var(--green);font-size:10px;font-weight:700;">islom.uz ✓</div>' +
     '</div>';
 
@@ -1663,7 +1663,7 @@ function renderHelp() {
 
   // Source info
   html += '<div class="icon-btn-row">' +
-    '<div class="icon-btn" style="opacity:0.7;cursor:default">' + ICONS.pin + ' Toshkent vaqtlari — islom.uz manbasidan</div>' +
+    '<div class="icon-btn" style="opacity:0.7;cursor:default">' + ICONS.pin + ' Andijon vaqtlari — islom.uz manbasidan</div>' +
     '</div>';
 
   // Why each namoz section
@@ -1687,7 +1687,7 @@ function renderHelp() {
     { title: 'Namozni vaqtida o\'qish', body: 'Har namoz uchun <strong>90 daqiqa</strong> oynasi bor. Vaqt kirishi bilan imkon bo\'lgan tezda o\'qish afzal. Kechiktirish odat bo\'lib qoladi.' },
     { title: 'Qarz emas, tartib', body: 'O\'tkazib yuborilgan namozlar "qarz" sifatida saqlanadi. Maqsad — uni ko\'paytirmaslik, lekin botibdan o\'qish ham qazo hisoblanadi.' },
     { title: 'Eslatmalar yoqish', body: 'Bugun tabidan <strong>Eslatmalar</strong> tugmasini bosib, brauzer bildirishnomalarini yoqing. Har namoz vaqtida signal keladi.' },
-    { title: 'Vaqtlar manbayi', body: 'Barcha namoz vaqtlari <strong>islom.uz</strong> saytidan olingan — Toshkent uchun rasmiy va aniq jadval. 23 iyun – 1 sentabr 2026 oralig\'i to\'liq qamrab olingan.' },
+    { title: 'Vaqtlar manbayi', body: 'Barcha namoz vaqtlari <strong>islom.uz</strong> saytidan olingan — Andijon uchun rasmiy va aniq jadval. 23 iyun – 1 sentabr 2026 oralig\'i to\'liq qamrab olingan.' },
     { title: 'Yakshanba — maxsus kun', body: 'Yakshanbada faqat namoz talab qilinadi. Vazifalar bo\'lmaydi. Xohlaganing qil — bu ruhiy tiklanish kuni.' },
   ];
   tips.forEach(function(tip) {
