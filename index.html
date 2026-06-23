@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intizom — 69 Kun</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='64' height='64' rx='14' fill='%230c0c0c'/%3E%3Cpath d='M12 48L28 32L38 42L52 20' stroke='%231D9E75' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='52' cy='20' r='5' fill='%231D9E75'/%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#080808;--bg2:#111;--bg3:#181818;--bg4:#222;--bg5:#2a2a2a;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);--border3:rgba(255,255,255,0.18);
+  --text:#efefef;--text2:#888;--text3:#444;--text4:#2a2a2a;
+  --green:#1D9E75;--green2:rgba(29,158,117,0.12);--green3:rgba(29,158,117,0.06);--teal:#4DBFA0;
+  --amber:#E8A020;--amber2:rgba(232,160,32,0.1);
+  --red:#D94545;--red2:rgba(217,69,69,0.1);
+  --blue:#3A7BD5;--blue2:rgba(58,123,213,0.12);
+  --radius:14px;--radius-sm:10px;--radius-xs:7px;
+  --font:'Onest',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;-webkit-font-smoothing:antialiased;}
+.app{max-width:500px;margin:0 auto;padding:0 0 90px;}
+
+/* === NAV === */
+.top-nav{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 0;margin-bottom:20px;}
+.nav-brand{display:flex;align-items:center;gap:9px;}
+.brand-logo{width:28px;height:28px;flex-shrink:0;}
+.brand-name{font-size:15px;font-weight:800;color:var(--text);letter-spacing:-0.02em;}
+.brand-status{display:flex;align-items:center;gap:5px;}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.8);}}
+.status-offline{background:var(--red)!important;animation:none!important;}
+.status-label{font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:0.04em;}
+.nav-tabs{display:flex;background:var(--bg3);border-radius:10px;padding:3px;gap:2px;border:0.5px solid var(--border);}
+.nav-tab{padding:6px 13px;border-radius:8px;font-size:11px;font-weight:700;color:var(--text3);cursor:pointer;transition:all 0.2s;border:none;background:none;font-family:var(--font);letter-spacing:0.02em;}
+.nav-tab.active{background:var(--bg5);color:var(--text);border:0.5px solid var(--border2);}
+
+/* === PAGES === */
+.page{display:none;padding:0 18px;}
+.page.active{display:block;}
+
+/* === CONNECTION BANNER === */
+.conn-banner{background:var(--red2);border:0.5px solid rgba(217,69,69,0.3);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:14px;display:none;align-items:center;gap:10px;}
+.conn-banner.show{display:flex;}
+.conn-banner-text{font-size:12px;color:var(--red);font-weight:600;}
+.conn-banner-sub{font-size:11px;color:rgba(217,69,69,0.6);}
+.reconnect-btn{margin-left:auto;background:rgba(217,69,69,0.2);border:0.5px solid rgba(217,69,69,0.4);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--red);cursor:pointer;font-family:var(--font);white-space:nowrap;}
+
+/* === HEADER CARD === */
+.header-card{background:linear-gradient(145deg,var(--bg2),var(--bg3));border:0.5px solid var(--border2);border-radius:var(--radius);padding:20px;margin-bottom:14px;position:relative;overflow:hidden;}
+.header-card::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:radial-gradient(circle,rgba(29,158,117,0.08) 0%,transparent 70%);pointer-events:none;}
+.streak-row{display:flex;align-items:baseline;gap:8px;margin-bottom:2px;}
+.streak-num{font-size:54px;font-weight:800;color:var(--green);line-height:1;font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.03em;}
+.streak-suffix{font-size:17px;color:var(--text2);font-weight:500;}
+.streak-sub{font-size:12px;color:var(--text3);margin-bottom:16px;font-family:var(--mono);}
+.progress-wrap{margin-bottom:12px;}
+.progress-bar{height:2px;background:var(--bg4);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--teal));transition:width 0.8s cubic-bezier(0.4,0,0.2,1);}
+.header-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:6px;}
+.header-meta .val{color:var(--text2);}
+
+/* === STATS MINI === */
+.stats-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.stat-mini{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 10px;text-align:center;}
+.stat-mini-val{font-size:22px;font-weight:800;color:var(--text);font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.02em;}
+.stat-mini-lbl{font-size:9px;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;}
+
+/* === SECTION LABEL === */
+.section-label{font-size:9px;color:var(--text3);letter-spacing:0.14em;text-transform:uppercase;margin:18px 0 9px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.section-label::after{content:'';flex:1;height:0.5px;background:var(--border);}
+
+/* === NAMOZ GRID === */
+.namoz-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.namoz-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:13px 4px;text-align:center;cursor:pointer;transition:all 0.18s;user-select:none;position:relative;}
+.namoz-card:active{transform:scale(0.93);}
+.namoz-card.done{border-color:var(--green);background:var(--green2);}
+.namoz-card.locked{opacity:0.3;cursor:not-allowed;pointer-events:none;}
+.namoz-card.late:not(.done){border-color:var(--red);background:var(--red2);}
+.namoz-icon{width:22px;height:22px;margin:0 auto 5px;display:flex;align-items:center;justify-content:center;}
+.namoz-icon svg{width:18px;height:18px;opacity:0.5;}
+.namoz-card.done .namoz-icon svg{opacity:1;}
+.namoz-name{font-size:9px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;}
+.namoz-card.done .namoz-name{color:var(--teal);}
+.namoz-card.late:not(.done) .namoz-name{color:var(--red);}
+.namoz-time{font-size:11px;font-weight:700;color:var(--text);margin-top:3px;font-family:var(--mono);}
+
+/* === TASKS === */
+.tasks-list{display:flex;flex-direction:column;gap:7px;}
+.task-item{display:flex;align-items:center;gap:13px;padding:14px 16px;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all 0.18s;user-select:none;}
+.task-item:active{transform:scale(0.99);}
+.task-item.done{border-color:var(--green);background:var(--green3);}
+.task-item.done .task-name{color:var(--text3);text-decoration:line-through;}
+.task-circle{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
+.task-circle svg{width:11px;height:11px;opacity:0;transition:opacity 0.2s;}
+.task-item.done .task-circle{background:var(--green);border-color:var(--green);}
+.task-item.done .task-circle svg{opacity:1;}
+.task-info{flex:1;}
+.task-name{font-size:14px;font-weight:600;color:var(--text);}
+.task-meta{font-size:11px;color:var(--text3);margin-top:2px;font-family:var(--mono);}
+.task-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;font-family:var(--mono);letter-spacing:0.04em;}
+.badge-js{background:rgba(58,123,213,0.15);color:#7AAAF0;}
+.badge-vim{background:rgba(140,130,240,0.15);color:#BEB8F5;}
+.badge-din{background:rgba(232,160,32,0.15);color:#F0C870;}
+
+/* === BANNERS === */
+.sunday-banner{background:var(--amber2);border:0.5px solid rgba(232,160,32,0.2);border-radius:var(--radius);padding:16px 18px;margin-bottom:14px;}
+.sunday-title{font-size:15px;font-weight:700;color:var(--amber);margin-bottom:3px;}
+.sunday-sub{font-size:12px;color:rgba(232,160,32,0.55);}
+.debt-banner{background:var(--red2);border:0.5px solid rgba(217,69,69,0.25);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;}
+.debt-title{font-size:13px;font-weight:700;color:var(--red);margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.debt-sub{font-size:11px;color:rgba(217,69,69,0.6);line-height:1.5;}
+.quote-card{background:var(--bg2);border:0.5px solid var(--border);border-left:2px solid var(--green);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;font-size:13px;line-height:1.6;color:var(--text2);font-style:italic;}
+
+/* === CHART === */
+.chart-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px 14px 12px;margin-bottom:14px;}
+.chart-bars{display:flex;align-items:flex-end;gap:5px;height:80px;}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:5px;}
+.chart-bar{width:100%;max-width:20px;border-radius:3px 3px 1px 1px;transition:height 0.5s cubic-bezier(0.4,0,0.2,1);min-height:2px;}
+.chart-bar.full{background:var(--green);}
+.chart-bar.part{background:var(--green2);border:0.5px solid var(--teal);}
+.chart-bar.none{background:var(--bg4);}
+.chart-lbl{font-size:8px;color:var(--text3);font-family:var(--mono);}
+
+/* === CALENDAR === */
+.cal-month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-month-label{font-size:14px;font-weight:700;color:var(--text);}
+.cal-nav-btn{background:var(--bg3);border:0.5px solid var(--border2);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:16px;transition:background 0.15s;}
+.cal-nav-btn:hover{background:var(--bg4);}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:6px;}
+.cal-wd{font-size:9px;color:var(--text3);padding:4px 0;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;font-family:var(--mono);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-day{aspect-ratio:1;border-radius:9px;border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--text3);background:var(--bg2);cursor:pointer;transition:all 0.15s;font-family:var(--mono);}
+.cal-day:active{transform:scale(0.91);}
+.cal-day.empty,.cal-day.outside-range{background:none;border-color:transparent;cursor:default;pointer-events:none;opacity:0.1;}
+.cal-day.future{opacity:0.15;cursor:default;pointer-events:none;}
+.cal-day.today{border-color:var(--green);color:var(--green);font-weight:800;}
+.cal-day.completed{background:var(--green);border-color:var(--green);color:#fff;font-weight:800;}
+.cal-day.partial{background:var(--green2);border-color:rgba(77,191,160,0.5);color:var(--teal);}
+.cal-day.failed{background:var(--red2);border-color:rgba(217,69,69,0.2);color:var(--red);}
+.cal-day.sunday-rest{background:var(--amber2);border-color:rgba(232,160,32,0.2);color:var(--amber);}
+.cal-legend{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.cal-legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);}
+.cal-legend-dot{width:9px;height:9px;border-radius:3px;}
+
+/* === STATS PAGE === */
+.stats-big-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.stat-big{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:18px 16px;}
+.stat-big-val{font-size:32px;font-weight:800;font-family:var(--mono);color:var(--text);letter-spacing:-0.03em;line-height:1;}
+.stat-big-lbl{font-size:10px;color:var(--text3);margin-top:6px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;}
+.stat-big-sub{font-size:11px;color:var(--text3);margin-top:3px;font-family:var(--mono);}
+.stat-big.accent-green .stat-big-val{color:var(--green);}
+.stat-big.accent-amber .stat-big-val{color:var(--amber);}
+.stat-big.accent-red .stat-big-val{color:var(--red);}
+.stat-big.accent-blue .stat-big-val{color:var(--blue);}
+.namoz-stats-table{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:8px;}
+.nst-row{display:flex;align-items:center;padding:12px 16px;border-bottom:0.5px solid var(--border);}
+.nst-row:last-child{border-bottom:none;}
+.nst-icon{width:24px;height:24px;flex-shrink:0;margin-right:12px;display:flex;align-items:center;justify-content:center;}
+.nst-icon svg{width:16px;height:16px;}
+.nst-name{font-size:13px;font-weight:600;color:var(--text);flex:1;}
+.nst-bar-wrap{flex:2;height:4px;background:var(--bg4);border-radius:2px;margin:0 12px;}
+.nst-bar-fill{height:100%;border-radius:2px;background:var(--green);transition:width 0.6s ease;}
+.nst-pct{font-size:12px;font-weight:700;font-family:var(--mono);color:var(--text2);width:36px;text-align:right;}
+.weekly-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;}
+.weekly-day-col{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.weekly-day-lbl{font-size:8px;color:var(--text3);font-family:var(--mono);letter-spacing:0.06em;}
+.weekly-dot{width:100%;aspect-ratio:1;border-radius:4px;background:var(--bg4);}
+.weekly-dot.full{background:var(--green);}
+.weekly-dot.part{background:var(--green2);border:0.5px solid var(--teal);}
+
+/* === MODAL === */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:100;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border-radius:18px 18px 0 0;border:0.5px solid var(--border2);border-bottom:none;width:100%;max-width:500px;padding:20px 20px 44px;max-height:90vh;overflow-y:auto;animation:slideUp 0.22s cubic-bezier(0.4,0,0.2,1);}
+@keyframes slideUp{from{transform:translateY(50px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-handle{width:34px;height:3px;border-radius:2px;background:var(--bg5);margin:0 auto 18px;}
+.modal-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:3px;letter-spacing:-0.02em;}
+.modal-date{font-size:12px;color:var(--text3);margin-bottom:18px;font-family:var(--mono);}
+.modal-namoz-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px;}
+.modal-namoz{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 4px;text-align:center;cursor:pointer;transition:all 0.18s;user-select:none;}
+.modal-namoz:active{transform:scale(0.91);}
+.modal-namoz.done{border-color:var(--green);background:var(--green2);}
+.modal-namoz.locked{opacity:0.25;cursor:not-allowed;pointer-events:none;}
+.mn-icon{width:20px;height:20px;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;}
+.mn-icon svg{width:14px;height:14px;opacity:0.5;}
+.modal-namoz.done .mn-icon svg{opacity:1;}
+.mn-name{font-size:8px;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;}
+.mn-time{font-size:10px;font-weight:700;color:var(--text);margin-top:2px;font-family:var(--mono);}
+.modal-tasks{display:flex;flex-direction:column;gap:7px;margin-bottom:14px;}
+.modal-task{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg3);border:0.5px solid var(--border);border-radius:11px;cursor:pointer;transition:all 0.18s;user-select:none;}
+.modal-task:active{transform:scale(0.99);}
+.modal-task.done{border-color:var(--green);}
+.modal-task.done .mt-name{text-decoration:line-through;color:var(--text3);}
+.mt-circle{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
+.mt-circle svg{width:10px;height:10px;opacity:0;}
+.modal-task.done .mt-circle{background:var(--green);border-color:var(--green);}
+.modal-task.done .mt-circle svg{opacity:1;}
+.mt-info{flex:1;}
+.mt-name{font-size:13px;font-weight:600;color:var(--text);}
+.mt-meta{font-size:10px;color:var(--text3);margin-top:1px;font-family:var(--mono);}
+.modal-journal{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:13px;font-family:var(--font);resize:vertical;min-height:64px;margin-bottom:14px;outline:none;transition:border-color 0.2s;}
+.modal-journal:focus{border-color:var(--border2);}
+.modal-journal::placeholder{color:var(--text3);}
+.modal-locked-banner{background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.modal-locked-icon{flex-shrink:0;width:20px;height:20px;display:flex;align-items:center;justify-content:center;}
+.modal-locked-icon svg{width:16px;height:16px;color:var(--text3);}
+.modal-locked-text{font-size:12px;color:var(--text3);}
+.modal-close{width:100%;padding:13px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:11px;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:background 0.15s;}
+.modal-close:hover{background:var(--bg4);}
+
+/* === ICON BTN ROW === */
+.icon-btn-row{display:flex;gap:7px;margin-bottom:14px;}
+.icon-btn{flex:1;background:var(--bg2);border:0.5px solid var(--border2);border-radius:10px;padding:11px 10px;text-align:center;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:7px;font-family:var(--font);}
+.icon-btn svg{width:14px;height:14px;flex-shrink:0;}
+.icon-btn:hover{background:var(--bg3);color:var(--text);}
+
+/* === LOADING === */
+.loading{display:flex;align-items:center;justify-content:center;height:220px;color:var(--text3);font-size:13px;flex-direction:column;gap:14px;}
+.spinner{width:22px;height:22px;border-radius:50%;border:2px solid var(--bg4);border-top-color:var(--green);animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* === TOAST === */
+.notif-toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:var(--bg3);border:0.5px solid var(--border2);border-radius:10px;padding:10px 16px;font-size:12px;color:var(--text);z-index:300;opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:nowrap;font-family:var(--mono);}
+.notif-toast.show{opacity:1;}
+
+/* === SAVING INDICATOR === */
+.saving-pill{position:fixed;bottom:20px;right:18px;background:var(--green);border-radius:20px;padding:6px 12px;font-size:11px;font-weight:700;color:#fff;font-family:var(--mono);opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:200;}
+.saving-pill.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-nav">
+    <div class="nav-brand">
+      <svg class="brand-logo" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="64" height="64" rx="14" fill="#111"/>
+        <path d="M12 48L28 32L38 42L52 20" stroke="#1D9E75" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="52" cy="20" r="5" fill="#1D9E75"/>
+      </svg>
+      <span class="brand-name">Intizom</span>
+      <div class="brand-status" style="margin-left:4px;">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-label" id="statusLabel">sync</span>
+      </div>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" id="tab-today" onclick="APP.showPage('today')">Bugun</button>
+      <button class="nav-tab" id="tab-stats" onclick="APP.showPage('stats')">Statistika</button>
+      <button class="nav-tab" id="tab-calendar" onclick="APP.showPage('calendar')">Kalendar</button>
+    </div>
+  </div>
+
+  <div class="page active" id="page-today">
+    <div id="connBanner" class="conn-banner">
+      <div>
+        <div class="conn-banner-text">Ulanish yo'q</div>
+        <div class="conn-banner-sub">Ma'lumotlar saqlanmayapti</div>
+      </div>
+      <button class="reconnect-btn" onclick="APP.reconnect()">Qayta ulash</button>
+    </div>
+    <div id="todayContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+  </div>
+
+  <div class="page" id="page-stats">
+    <div id="statsContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+  </div>
+
+  <div class="page" id="page-calendar">
+    <div id="calContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div id="modalContent"></div>
+    <button class="modal-close" id="modalCloseBtn">Yopish</button>
+  </div>
+</div>
+
+<div class="notif-toast" id="notifToast"></div>
+<div class="saving-pill" id="savingPill">Saqlandi</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyB02ZyUGwlpu6w19pu5nuvNnTaQwV1aMSo",
+  authDomain: "intizom-d2c0e.firebaseapp.com",
+  projectId: "intizom-d2c0e",
+  storageBucket: "intizom-d2c0e.firebasestorage.app",
+  messagingSenderId: "381400202701",
+  appId: "1:381400202701:web:4db3e0b777532c9aa99884"
+};
+
+var db = null;
+const USER_ID = 'user_main';
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  try { db.settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED }); } catch(e){}
+  db.enablePersistence({ synchronizeTabs: true }).catch(function(){});
+} catch(e) {
+  console.warn('Firebase init failed:', e);
+}
+
+// ============================================================
+// CONSTANTS
+// ============================================================
+const START = new Date('2026-06-23T00:00:00');
+const END   = new Date('2026-09-01T00:00:00');
+const TOTAL_DAYS = 69;
+const LATE_AFTER_MIN = 90; // Bu daqiqadan keyin namoz "kech" hisoblanadi
+const EDIT_WINDOW_DAYS = 1; // Faqat bugun va kecha tahrirlanadi
+
+const NAMOZLAR = [
+  { id: 'bomdod', name: 'Bomdod', time: '03:04' },
+  { id: 'peshin', name: 'Peshin', time: '12:25' },
+  { id: 'asr',    name: 'Asr',    time: '17:41' },
+  { id: 'shom',   name: 'Shom',   time: '20:04' },
+  { id: 'xufton', name: 'Xufton', time: '21:46' },
+];
+
+const TASKS = [
+  { id: 'js',  name: 'JavaScript',        meta: '3–4 soat',  badge: 'badge-js',  label: 'JS' },
+  { id: 'vim', name: 'Vim mashq',         meta: '1 soat',    badge: 'badge-vim', label: 'Vim' },
+  { id: 'din', name: "Islomiy o'rganish", meta: '2 soat',    badge: 'badge-din', label: 'Din' },
+];
+
+const QUOTES = [
+  '&ldquo;Albatta, mashaqqat bilan birga yengillik bordir.&rdquo; &mdash; Sharh, 5',
+  'Kichik qadamlar, lekin har kuni &mdash; bu katta sakrashdan kuchliroqdir.',
+  'Intizom &mdash; bu o\'zing bilan qilgan va\'dangga sodiq qolish san\'atidir.',
+  'Bugungi mehnat &mdash; ertangi erkinlik.',
+  '&ldquo;Vaqtingni g\'animat bil, u qaytib kelmaydigan boylikdir.&rdquo;',
+  '69 kun &mdash; bu umrning bir nafasi, lekin natijasi umrbod qoladi.',
+  'Har bir bajarilgan namoz &mdash; qalbingdagi tinchlik zaxirasi.',
+  'Sustkashlik bugun yengil, ertaga og\'ir bo\'ladi.',
+  'Kichik intizomsizliklar yig\'ilib, katta pushaymonlikka aylanadi.',
+  'Sen bu kunlarni o\'zing tanlading. Endi ularga sodiq qol.',
+];
+
+// ============================================================
+// SVG ICONS
+// ============================================================
+const ICONS = {
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+  sun:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
+  cloud:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>',
+  sunset:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 18a5 5 0 0 0-10 0"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"/><line x1="1" y1="18" x2="3" y2="18"/><line x1="21" y1="18" x2="23" y2="18"/><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"/><line x1="23" y1="22" x2="1" y2="22"/><polyline points="8 6 12 2 16 6"/></svg>',
+  stars:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>',
+  download:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+  code: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+  terminal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
+};
+
+const NAMOZ_ICONS = ['moon','sun','cloud','sunset','stars'];
+
+// ============================================================
+// STATE
+// ============================================================
+var state = {}; // { "2026-06-23": { n_bomdod: true, t_js: false, journal: "..." } }
+var isOnline = false;
+var isSaving = false;
+var savingTimer = null;
+var currentPage = 'today';
+var modalKey = null;
+var calYear  = new Date().getFullYear();
+var calMonth = new Date().getMonth();
+var notifTimer = null;
+var unsubscribe = null;
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function todayKey() {
+  // Server-independent — always use local date
+  var d = new Date();
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+}
+function pad(n){ return n < 10 ? '0'+n : ''+n; }
+function getDayNum() {
+  return Math.min(Math.max(Math.floor((new Date() - START) / 86400000) + 1, 1), TOTAL_DAYS);
+}
+function getDaysLeft() {
+  return Math.max(0, Math.ceil((END - new Date()) / 86400000));
+}
+function isSunday(key) {
+  return new Date(key + 'T12:00:00').getDay() === 0;
+}
+function keyToDate(key) {
+  return new Date(key + 'T12:00:00');
+}
+
+// ============================================================
+// ANTI-CHEAT LOGIC
+// ============================================================
+// Rule 1: Past days > EDIT_WINDOW_DAYS are LOCKED
+function isPastDayLocked(key) {
+  if (key > todayKey()) return true; // future locked
+  var tk = todayKey();
+  var diffDays = Math.round((keyToDate(tk) - keyToDate(key)) / 86400000);
+  return diffDays > EDIT_WINDOW_DAYS;
+}
+
+// Rule 2: Today's namoz — locked if prayer time hasn't come yet
+function isNamozLockedByTime(namozId, key) {
+  if (key !== todayKey()) return false;
+  var n = NAMOZLAR.find(function(x){ return x.id === namozId; });
+  if (!n) return false;
+  var parts = n.time.split(':');
+  var namozTime = new Date();
+  namozTime.setHours(parseInt(parts[0],10), parseInt(parts[1],10), 0, 0);
+  return new Date() < namozTime;
+}
+
+function isNamozLocked(namozId, key) {
+  if (isPastDayLocked(key)) return true;
+  return isNamozLockedByTime(namozId, key);
+}
+
+// Rule 3: "Late" = prayer time passed > LATE_AFTER_MIN minutes (and not done)
+function isNamozLate(namozId, key) {
+  if (key !== todayKey()) return false;
+  var n = NAMOZLAR.find(function(x){ return x.id === namozId; });
+  if (!n) return false;
+  var parts = n.time.split(':');
+  var namozTime = new Date();
+  namozTime.setHours(parseInt(parts[0],10), parseInt(parts[1],10), 0, 0);
+  return (new Date() - namozTime) / 60000 > LATE_AFTER_MIN;
+}
+
+// Rule 4: Task locked if day locked
+function isTaskLocked(key) {
+  return isPastDayLocked(key);
+}
+
+// ============================================================
+// DATA LOGIC
+// ============================================================
+function isDayComplete(key) {
+  var ds = state[key] || {};
+  if (!NAMOZLAR.every(function(n){ return ds['n_' + n.id]; })) return false;
+  if (isSunday(key)) return true;
+  return TASKS.every(function(t){ return ds['t_' + t.id]; });
+}
+function isDayPartial(key) {
+  var ds = state[key] || {};
+  var any = NAMOZLAR.some(function(n){ return ds['n_' + n.id]; }) ||
+            TASKS.some(function(t){ return ds['t_' + t.id]; });
+  return any && !isDayComplete(key);
+}
+function getStreak() {
+  var streak = 0;
+  var today = new Date();
+  var tk = todayKey();
+  for (var i = 0; i < TOTAL_DAYS; i++) {
+    var d = new Date(today); d.setDate(d.getDate() - i);
+    if (d < START) break;
+    var key = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+    if (isDayComplete(key)) streak++;
+    else if (key !== tk) break; // today can be in-progress
+  }
+  return streak;
+}
+function getTotalComplete() {
+  var today = new Date();
+  var count = 0;
+  Object.keys(state).forEach(function(k){
+    var d = keyToDate(k);
+    if (d >= START && d <= today && isDayComplete(k)) count++;
+  });
+  return count;
+}
+function getDebtItems() {
+  var debts = [];
+  var today = new Date();
+  var tk = todayKey();
+  for (var i = 1; i <= TOTAL_DAYS; i++) {
+    var d = new Date(today); d.setDate(d.getDate() - i);
+    if (d < START) break;
+    var key = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+    if (key === tk) continue;
+    var ds = state[key] || {};
+    NAMOZLAR.forEach(function(n){
+      if (!ds['n_' + n.id]) debts.push({ key: key, name: n.name });
+    });
+    if (!isSunday(key)) {
+      TASKS.forEach(function(t){
+        if (!ds['t_' + t.id]) debts.push({ key: key, name: t.name });
+      });
+    }
+  }
+  return debts;
+}
+
+// Namoz per-prayer completion stats
+function getNamozStats() {
+  var counts = {};
+  NAMOZLAR.forEach(function(n){ counts[n.id] = { done: 0, total: 0 }; });
+  var today = new Date();
+  var tk = todayKey();
+  var d = new Date(START);
+  while (d <= today) {
+    var key = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+    if (key <= tk && key >= START.toISOString().slice(0,10)) {
+      var ds = state[key] || {};
+      NAMOZLAR.forEach(function(n){
+        counts[n.id].total++;
+        if (ds['n_' + n.id]) counts[n.id].done++;
+      });
+    }
+    d.setDate(d.getDate() + 1);
+  }
+  return counts;
+}
+
+// ============================================================
+// FIREBASE — ALWAYS ONLINE
+// ============================================================
+function setOnline(on) {
+  isOnline = on;
+  var dot = document.getElementById('statusDot');
+  var lbl = document.getElementById('statusLabel');
+  var banner = document.getElementById('connBanner');
+  if (dot && lbl) {
+    if (on) {
+      dot.classList.remove('status-offline');
+      lbl.textContent = 'sync';
+    } else {
+      dot.classList.add('status-offline');
+      lbl.textContent = 'offline';
+    }
+  }
+  if (banner) banner.classList.toggle('show', !on);
+}
+
+function startFirestoreListener() {
+  if (!db) { setOnline(false); renderCurrentPage(); return; }
+  if (unsubscribe) { try { unsubscribe(); } catch(e){} }
+  try {
+    unsubscribe = db.collection('users').doc(USER_ID).collection('days')
+      .onSnapshot(function(snapshot) {
+        setOnline(true);
+        snapshot.docChanges().forEach(function(change) {
+          if (change.type === 'removed') {
+            delete state[change.doc.id];
+          } else {
+            state[change.doc.id] = change.doc.data();
+          }
+        });
+        renderCurrentPage();
+      }, function(err) {
+        setOnline(false);
+        console.warn('Firestore error:', err);
+        renderCurrentPage();
+      });
+  } catch(e) {
+    setOnline(false);
+    console.warn('Listener error:', e);
+    renderCurrentPage();
+  }
+}
+
+function saveDay(key, data) {
+  if (!db || !isOnline) {
+    showToast("Tarmoq yo'q. Ma'lumot saqlanmadi.");
+    return;
+  }
+  showSaving();
+  db.collection('users').doc(USER_ID).collection('days').doc(key)
+    .set(data, { merge: true })
+    .then(function(){ hideSaving(); })
+    .catch(function(err){
+      hideSaving();
+      showToast('Saqlash xatosi: ' + err.message);
+    });
+}
+
+function showSaving() {
+  var pill = document.getElementById('savingPill');
+  if (pill) {
+    pill.textContent = 'Saqlanmoqda...';
+    pill.classList.add('show');
+  }
+}
+function hideSaving() {
+  var pill = document.getElementById('savingPill');
+  if (!pill) return;
+  pill.textContent = 'Saqlandi ✓';
+  if (savingTimer) clearTimeout(savingTimer);
+  savingTimer = setTimeout(function(){ pill.classList.remove('show'); }, 1400);
+}
+
+// ============================================================
+// APP OBJECT
+// ============================================================
+var APP = {};
+
+APP.reconnect = function() {
+  showToast("Qayta ulanilmoqda...");
+  startFirestoreListener();
+};
+
+APP.showPage = function(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+  currentPage = id;
+  if (id === 'calendar') renderCalendar();
+  else if (id === 'stats') renderStats();
+  else renderToday();
+};
+
+APP.toggleNamoz = function(id, key) {
+  if (!isOnline) { showToast("Offline. Avval tarmoqqa ulaning."); return; }
+  if (isNamozLocked(id, key)) {
+    if (isNamozLockedByTime(id, key)) showToast('Bu namoz vaqti hali kelmagan — sabr qiling.');
+    else showToast('Bu kun qulflangan — intizom uchun o\'zgartirish mumkin emas.');
+    return;
+  }
+  if (!state[key]) state[key] = {};
+  state[key]['n_' + id] = !state[key]['n_' + id];
+  saveDay(key, state[key]);
+  if (key === todayKey()) renderToday();
+  if (modalKey === key) renderModal(key);
+  if (currentPage === 'calendar') renderCalendar();
+  if (currentPage === 'stats') renderStats();
+};
+
+APP.toggleTask = function(id, key) {
+  if (!isOnline) { showToast("Offline. Avval tarmoqqa ulaning."); return; }
+  if (isTaskLocked(key)) {
+    showToast('Bu kun qulflangan — faqat bugun va kecha tahrirlanadi.');
+    return;
+  }
+  if (!state[key]) state[key] = {};
+  state[key]['t_' + id] = !state[key]['t_' + id];
+  saveDay(key, state[key]);
+  if (key === todayKey()) renderToday();
+  if (modalKey === key) renderModal(key);
+  if (currentPage === 'calendar') renderCalendar();
+  if (currentPage === 'stats') renderStats();
+};
+
+APP.saveJournal = function(key, value) {
+  if (!isOnline) { showToast("Offline. Journal saqlanmadi."); return; }
+  if (isPastDayLocked(key)) return;
+  if (!state[key]) state[key] = {};
+  state[key]['journal'] = value;
+  saveDay(key, state[key]);
+};
+
+APP.openModal = function(key) {
+  modalKey = key;
+  renderModal(key);
+  document.getElementById('modalOverlay').classList.add('open');
+};
+
+APP.calPrev = function() {
+  calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+};
+APP.calNext = function() {
+  calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+};
+
+APP.exportData = function() {
+  var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'intizom-backup-' + todayKey() + '.json';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  showToast('Backup yuklab olindi.');
+};
+
+APP.requestNotif = function() {
+  if (!('Notification' in window)) { showToast("Brauzer notification'ni qo'llamaydi."); return; }
+  Notification.requestPermission().then(function(perm){
+    if (perm === 'granted') { showToast("Eslatmalar yoqildi!"); startNotifWatcher(); }
+    else showToast("Eslatmalarga ruxsat berilmadi.");
+  });
+};
+
+// ============================================================
+// NOTIFICATION WATCHER
+// ============================================================
+function startNotifWatcher() {
+  if (notifTimer) clearInterval(notifTimer);
+  var notified = {};
+  notifTimer = setInterval(function(){
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    var now = new Date();
+    var tk = todayKey();
+    NAMOZLAR.forEach(function(n){
+      var parts = n.time.split(':');
+      var nt = new Date(); nt.setHours(parseInt(parts[0],10), parseInt(parts[1],10), 0, 0);
+      var diffMin = (now - nt) / 60000;
+      var flagKey = tk + '_' + n.id;
+      if (diffMin >= 0 && diffMin < 1 && !notified[flagKey]) {
+        notified[flagKey] = true;
+        var ds = state[tk] || {};
+        if (!ds['n_' + n.id]) {
+          new Notification('Intizom — ' + n.name, { body: n.name + ' namozi vaqti keldi (' + n.time + ').' });
+        }
+      }
+    });
+  }, 30000);
+}
+
+// ============================================================
+// RENDER: TODAY
+// ============================================================
+function dailyQuote() {
+  return QUOTES[getDayNum() % QUOTES.length];
+}
+
+function renderToday() {
+  var tk = todayKey();
+  var ds = state[tk] || {};
+  var dayNum = getDayNum();
+  var daysLeft = getDaysLeft();
+  var streak = getStreak();
+  var totalDone = getTotalComplete();
+  var pct = Math.min(100, Math.round(((dayNum - 1) / TOTAL_DAYS) * 100));
+  var namozDone = NAMOZLAR.filter(function(n){ return ds['n_' + n.id]; }).length;
+  var sunday = isSunday(tk);
+  var successPct = dayNum > 1 ? Math.round((totalDone / (dayNum - 1)) * 100) : 0;
+  var debts = getDebtItems();
+
+  var html = '';
+
+  // Header card
+  html += '<div class="header-card">' +
+    '<div class="streak-row"><span class="streak-num">' + streak + '</span><span class="streak-suffix">kun ketma-ket</span></div>' +
+    '<div class="streak-sub">' + dayNum + '-kun · ' + daysLeft + ' kun qoldi</div>' +
+    '<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+    '<div class="header-meta"><span class="val">' + pct + '%</span> yakunlandi · Sentabr 1 <span class="val">gacha</span></div></div>' +
+    '</div>';
+
+  // Quote
+  html += '<div class="quote-card">' + dailyQuote() + '</div>';
+
+  // Stats mini
+  html += '<div class="stats-mini">' +
+    '<div class="stat-mini"><div class="stat-mini-val">' + namozDone + '/5</div><div class="stat-mini-lbl">Bugun namoz</div></div>' +
+    '<div class="stat-mini"><div class="stat-mini-val">' + totalDone + '</div><div class="stat-mini-lbl">Mukammal kun</div></div>' +
+    '<div class="stat-mini"><div class="stat-mini-val">' + successPct + '%</div><div class="stat-mini-lbl">Natija</div></div>' +
+    '</div>';
+
+  // Debt banner
+  if (debts.length > 0) {
+    html += '<div class="debt-banner">' +
+      '<div class="debt-title"><span style="display:inline-flex;width:16px;height:16px;color:var(--red)">' + ICONS.warn + '</span>' + debts.length + ' ta qarzing bor</div>' +
+      '<div class="debt-sub">O\'tgan kunlarda bajarilmagan namoz/vazifalar. Kechagi kunni hali tahrirlash mumkin.</div>' +
+      '</div>';
+  }
+
+  // Sunday banner
+  if (sunday) {
+    html += '<div class="sunday-banner"><div class="sunday-title">Yakshanba — dam olish kuni</div>' +
+      '<div class="sunday-sub">Faqat namoz. Xohlaganing qil. Yaxshi hordiq!</div></div>';
+  }
+
+  // Namozlar
+  html += '<div class="section-label">Namozlar</div><div class="namoz-grid">';
+  NAMOZLAR.forEach(function(n, i) {
+    var done = !!ds['n_' + n.id];
+    var locked = isNamozLocked(n.id, tk);
+    var late = !done && isNamozLate(n.id, tk);
+    var iconKey = NAMOZ_ICONS[i];
+    html += '<div class="namoz-card ' + (done?'done ':'') + (locked?'locked ':'') + (late?'late':'') + '" onclick="APP.toggleNamoz(\'' + n.id + '\',\'' + tk + '\')">' +
+      '<div class="namoz-icon" style="color:' + (done?'var(--green)':(late?'var(--red)':'var(--text3)')) + '">' +
+        (done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>'
+              : (locked ? ICONS.lock : ICONS[iconKey])) +
+      '</div>' +
+      '<div class="namoz-name">' + n.name + '</div>' +
+      '<div class="namoz-time">' + n.time + '</div></div>';
+  });
+  html += '</div>';
+
+  // Tasks
+  if (!sunday) {
+    html += '<div class="section-label">Vazifalar</div><div class="tasks-list">';
+    TASKS.forEach(function(t) {
+      var done = !!ds['t_' + t.id];
+      var taskIcon = t.id === 'js' ? ICONS.code : (t.id === 'vim' ? ICONS.terminal : ICONS.book);
+      html += '<div class="task-item ' + (done?'done':'') + '" onclick="APP.toggleTask(\'' + t.id + '\',\'' + tk + '\')">' +
+        '<div class="task-circle"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+        '<div class="task-info"><div class="task-name">' + t.name + '</div><div class="task-meta">' + t.meta + '</div></div>' +
+        '<span class="task-badge ' + t.badge + '">' + t.label + '</span></div>';
+    });
+    html += '</div>';
+  }
+
+  // Boshqaruv
+  html += '<div class="section-label">Boshqaruv</div>' +
+    '<div class="icon-btn-row">' +
+    '<div class="icon-btn" onclick="APP.requestNotif()">' + ICONS.bell + ' Eslatmalar</div>' +
+    '<div class="icon-btn" onclick="APP.exportData()">' + ICONS.download + ' Backup</div>' +
+    '</div>';
+
+  // Chart
+  html += renderChartCard();
+
+  document.getElementById('todayContent').innerHTML = html;
+}
+
+function renderChartCard() {
+  var days = [];
+  var today = new Date();
+  for (var i = 13; i >= 0; i--) {
+    var d = new Date(today); d.setDate(d.getDate() - i);
+    if (d < START) continue;
+    days.push(d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()));
+  }
+  var dayLabels = ['Ya','Du','Se','Ch','Pa','Ju','Sh'];
+  var html = '<div class="section-label">So\'nggi 14 kun</div><div class="chart-card"><div class="chart-bars">';
+  days.forEach(function(key){
+    var ds = state[key] || {};
+    var sunday = isSunday(key);
+    var totalSlots = sunday ? NAMOZLAR.length : (NAMOZLAR.length + TASKS.length);
+    var doneSlots = NAMOZLAR.filter(function(n){ return ds['n_' + n.id]; }).length;
+    if (!sunday) doneSlots += TASKS.filter(function(t){ return ds['t_' + t.id]; }).length;
+    var pct = totalSlots ? (doneSlots / totalSlots) : 0;
+    var h = Math.max(3, Math.round(pct * 72));
+    var cls = pct >= 0.999 ? 'full' : (pct > 0 ? 'part' : 'none');
+    var dow = keyToDate(key).getDay();
+    html += '<div class="chart-bar-wrap"><div class="chart-bar ' + cls + '" style="height:' + h + 'px"></div>' +
+      '<div class="chart-lbl">' + dayLabels[dow] + '</div></div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+// ============================================================
+// RENDER: STATISTICS
+// ============================================================
+function renderStats() {
+  var streak = getStreak();
+  var totalDone = getTotalComplete();
+  var dayNum = getDayNum();
+  var successPct = dayNum > 1 ? Math.round((totalDone / (dayNum - 1)) * 100) : 0;
+  var debts = getDebtItems();
+  var namozStats = getNamozStats();
+
+  // Best streak
+  var bestStreak = 0, curS = 0;
+  var today2 = new Date();
+  for (var i = 0; i < TOTAL_DAYS; i++) {
+    var d = new Date(today2); d.setDate(d.getDate() - i);
+    if (d < START) break;
+    var k = d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+    if (isDayComplete(k)) { curS++; if (curS > bestStreak) bestStreak = curS; }
+    else curS = 0;
+  }
+
+  // Total namoz done
+  var totalNamoz = 0;
+  Object.values(namozStats).forEach(function(s){ totalNamoz += s.done; });
+  var totalNamozPossible = 0;
+  Object.values(namozStats).forEach(function(s){ totalNamozPossible += s.total; });
+
+  var html = '';
+
+  // Big stats
+  html += '<div class="stats-big-grid">' +
+    '<div class="stat-big accent-green"><div class="stat-big-val">' + streak + '</div><div class="stat-big-lbl">Joriy Streak</div><div class="stat-big-sub">kun uzluksiz</div></div>' +
+    '<div class="stat-big accent-blue"><div class="stat-big-val">' + bestStreak + '</div><div class="stat-big-lbl">Eng Uzun</div><div class="stat-big-sub">streak</div></div>' +
+    '<div class="stat-big accent-green"><div class="stat-big-val">' + totalDone + '</div><div class="stat-big-lbl">Mukammal Kun</div><div class="stat-big-sub">/ ' + (dayNum-1) + ' o\'tdi</div></div>' +
+    '<div class="stat-big ' + (successPct >= 80 ? 'accent-green' : successPct >= 50 ? 'accent-amber' : 'accent-red') + '"><div class="stat-big-val">' + successPct + '%</div><div class="stat-big-lbl">Umumiy Natija</div><div class="stat-big-sub">muvaffaqiyat</div></div>' +
+    '</div>';
+
+  html += '<div class="stats-big-grid">' +
+    '<div class="stat-big"><div class="stat-big-val">' + totalNamoz + '</div><div class="stat-big-lbl">Namoz O\'qildi</div><div class="stat-big-sub">/ ' + totalNamozPossible + ' dan</div></div>' +
+    '<div class="stat-big accent-red"><div class="stat-big-val">' + debts.length + '</div><div class="stat-big-lbl">Qarz</div><div class="stat-big-sub">bajarilmagan</div></div>' +
+    '</div>';
+
+  // Per-namoz stats
+  html += '<div class="section-label">Har bir namoz</div><div class="namoz-stats-table">';
+  NAMOZLAR.forEach(function(n, i) {
+    var s = namozStats[n.id];
+    var pct = s.total ? Math.round((s.done / s.total) * 100) : 0;
+    html += '<div class="nst-row">' +
+      '<div class="nst-icon" style="color:var(--green)">' + ICONS[NAMOZ_ICONS[i]] + '</div>' +
+      '<div class="nst-name">' + n.name + '</div>' +
+      '<div class="nst-bar-wrap"><div class="nst-bar-fill" style="width:' + pct + '%"></div></div>' +
+      '<div class="nst-pct">' + pct + '%</div>' +
+      '</div>';
+  });
+  html += '</div>';
+
+  // Weekly heatmap (last 7 weeks)
+  html += '<div class="section-label">Haftalik ko\'rinish</div>';
+  var dayLbls = ['Ya','Du','Se','Ch','Pa','Ju','Sh'];
+  html += '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;">';
+  html += '<div style="display:flex;gap:4px;min-width:min-content;">';
+
+  // Build last 7 weeks column by column (Mon=0 ... Sun=6)
+  // week columns
+  var weeks = [];
+  var now = new Date(today2);
+  // Find last Sunday
+  var wEnd = new Date(now);
+  wEnd.setDate(wEnd.getDate() + (0 - wEnd.getDay() + 7) % 7); // next or current sunday
+  if (wEnd > now) wEnd.setDate(wEnd.getDate() - 7);
+  for (var w = 6; w >= 0; w--) {
+    var weekDays = [];
+    var sunOfWeek = new Date(wEnd); sunOfWeek.setDate(wEnd.getDate() - w * 7);
+    // Mon to Sun
+    var monOfWeek = new Date(sunOfWeek); monOfWeek.setDate(sunOfWeek.getDate() - 6);
+    for (var wd = 0; wd < 7; wd++) {
+      var dd = new Date(monOfWeek); dd.setDate(monOfWeek.getDate() + wd);
+      weekDays.push(dd);
+    }
+    weeks.push(weekDays);
+  }
+
+  // column headers (day labels)
+  html += '<div style="display:flex;flex-direction:column;gap:4px;margin-right:4px;">';
+  html += '<div style="height:14px"></div>'; // spacer
+  dayLbls.forEach(function(l){
+    html += '<div style="font-size:8px;color:var(--text3);font-family:var(--mono);height:14px;display:flex;align-items:center;letter-spacing:0.06em;">' + l + '</div>';
+  });
+  html += '</div>';
+
+  weeks.forEach(function(wDays) {
+    html += '<div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:28px;">';
+    var wk = wDays[6]; // Sunday of week
+    var wLabel = pad(wk.getMonth()+1) + '/' + pad(wk.getDate());
+    html += '<div style="font-size:7px;color:var(--text3);font-family:var(--mono);text-align:center;height:14px;white-space:nowrap;">' + wLabel + '</div>';
+    wDays.forEach(function(dd) {
+      var key2 = dd.getFullYear()+'-'+pad(dd.getMonth()+1)+'-'+pad(dd.getDate());
+      var inRange = dd >= START && dd <= now;
+      var bgColor = 'var(--bg4)';
+      if (inRange) {
+        if (isDayComplete(key2)) bgColor = 'var(--green)';
+        else if (isDayPartial(key2)) bgColor = 'var(--teal)';
+        else if (dd < now) bgColor = 'rgba(217,69,69,0.25)';
+      }
+      html += '<div style="height:14px;border-radius:3px;background:' + bgColor + ';opacity:' + (inRange?1:0.15) + '"></div>';
+    });
+    html += '</div>';
+  });
+  html += '</div></div>';
+
+  document.getElementById('statsContent').innerHTML = html;
+}
+
+// ============================================================
+// RENDER: CALENDAR
+// ============================================================
+function renderCalendar() {
+  var today = new Date();
+  var todayStr = todayKey();
+  var monthNames = ['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'];
+  var firstDay = new Date(calYear, calMonth, 1);
+  var lastDay  = new Date(calYear, calMonth + 1, 0);
+  var startDow = firstDay.getDay();
+  if (startDow === 0) startDow = 7; // Mon-first
+
+  var html = '<div class="cal-month-nav">' +
+    '<button class="cal-nav-btn" onclick="APP.calPrev()">&#8249;</button>' +
+    '<div class="cal-month-label">' + monthNames[calMonth] + ' ' + calYear + '</div>' +
+    '<button class="cal-nav-btn" onclick="APP.calNext()">&#8250;</button></div>' +
+    '<div class="cal-weekdays"><div class="cal-wd">Du</div><div class="cal-wd">Se</div><div class="cal-wd">Ch</div>' +
+    '<div class="cal-wd">Pa</div><div class="cal-wd">Ju</div><div class="cal-wd">Sh</div>' +
+    '<div class="cal-wd" style="color:var(--amber)">Ya</div></div>' +
+    '<div class="cal-grid">';
+
+  for (var i = 1; i < startDow; i++) html += '<div class="cal-day empty"></div>';
+
+  for (var day = 1; day <= lastDay.getDate(); day++) {
+    var dateObj = new Date(calYear, calMonth, day);
+    var key = dateObj.getFullYear() + '-' + pad(dateObj.getMonth()+1) + '-' + pad(dateObj.getDate());
+    var inRange = dateObj >= START && dateObj < END;
+    var isFuture = dateObj > today;
+    var isToday = key === todayStr;
+    var isSun = dateObj.getDay() === 0;
+
+    var cls = 'cal-day';
+    if (!inRange) cls += ' outside-range';
+    else if (isFuture) cls += ' future';
+    else if (isDayComplete(key)) cls += ' completed';
+    else if (isToday) cls += ' today';
+    else if (isSun) cls += ' sunday-rest';
+    else if (isDayPartial(key)) cls += ' partial';
+    else cls += ' failed';
+
+    var clickable = inRange && !isFuture;
+    html += '<div class="' + cls + '"' + (clickable ? ' onclick="APP.openModal(\'' + key + '\')"' : '') + '>' + day + '</div>';
+  }
+
+  html += '</div><div class="cal-legend">' +
+    '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green)"></div>Mukammal</div>' +
+    '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green2);border:0.5px solid var(--teal)"></div>Qisman</div>' +
+    '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--red2);border:0.5px solid var(--red)"></div>O\'tkazib</div>' +
+    '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--amber2);border:0.5px solid var(--amber)"></div>Yakshanba</div>' +
+    '</div>';
+
+  document.getElementById('calContent').innerHTML = html;
+}
+
+// ============================================================
+// RENDER: MODAL
+// ============================================================
+function renderModal(key) {
+  var ds = state[key] || {};
+  var dateObj = keyToDate(key);
+  var sunday = isSunday(key);
+  var dayNames = ['Yakshanba','Dushanba','Seshanba','Chorshanba','Payshanba','Juma','Shanba'];
+  var mNames = ['yan','fev','mar','apr','may','iyn','iyl','avg','sen','okt','noy','dek'];
+  var label = dayNames[dateObj.getDay()] + ', ' + dateObj.getDate() + ' ' + mNames[dateObj.getMonth()];
+  var dayNum = Math.floor((dateObj - START) / 86400000) + 1;
+  var locked = isPastDayLocked(key);
+
+  var html = '<div class="modal-title">' + dayNum + '-kun' + (locked ? ' &nbsp;<span style="font-size:13px;color:var(--text3);font-weight:500">qulflangan</span>' : '') + '</div>' +
+    '<div class="modal-date">' + label + '</div>';
+
+  if (locked) {
+    html += '<div class="modal-locked-banner">' +
+      '<div class="modal-locked-icon" style="color:var(--text3)">' + ICONS.lock + '</div>' +
+      '<div class="modal-locked-text">Bu kun qulflangan — faqat bugun va kecha tahrirlanadi. Intizom buzilmasligi uchun.</div>' +
+      '</div>';
+  }
+
+  if (sunday) {
+    html += '<div class="sunday-banner" style="margin-bottom:14px"><div class="sunday-title">Yakshanba — dam olish</div>' +
+      '<div class="sunday-sub">Faqat namoz. Xohlaganing qil.</div></div>';
+  }
+
+  html += '<div class="section-label">Namozlar</div><div class="modal-namoz-grid">';
+  NAMOZLAR.forEach(function(n, i) {
+    var done = !!ds['n_' + n.id];
+    var nlocked = locked;
+    var iconKey = NAMOZ_ICONS[i];
+    html += '<div class="modal-namoz ' + (done?'done ':'') + (nlocked?'locked':'') + '" onclick="APP.toggleNamoz(\'' + n.id + '\',\'' + key + '\')">' +
+      '<div class="mn-icon" style="color:' + (done?'var(--green)':'var(--text3)') + '">' +
+        (done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>'
+              : (nlocked ? ICONS.lock : ICONS[iconKey])) +
+      '</div>' +
+      '<div class="mn-name">' + n.name + '</div>' +
+      '<div class="mn-time">' + n.time + '</div></div>';
+  });
+  html += '</div>';
+
+  if (!sunday) {
+    html += '<div class="section-label">Vazifalar</div><div class="modal-tasks">';
+    TASKS.forEach(function(t) {
+      var done = !!ds['t_' + t.id];
+      html += '<div class="modal-task ' + (done?'done':'') + '" onclick="APP.toggleTask(\'' + t.id + '\',\'' + key + '\')">' +
+        '<div class="mt-circle"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+        '<div class="mt-info"><div class="mt-name">' + t.name + '</div><div class="mt-meta">' + t.meta + '</div></div></div>';
+    });
+    html += '</div>';
+  }
+
+  if (!locked) {
+    html += '<div class="section-label">Kundalik</div>' +
+      '<textarea class="modal-journal" placeholder="Bugun qanday o\'tdi? Qisqacha yoz..." onblur="APP.saveJournal(\'' + key + '\', this.value)">' +
+      (ds.journal ? ds.journal.replace(/</g,'&lt;').replace(/>/g,'&gt;') : '') + '</textarea>';
+  }
+
+  document.getElementById('modalContent').innerHTML = html;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function renderCurrentPage() {
+  if (currentPage === 'today') renderToday();
+  else if (currentPage === 'stats') renderStats();
+  else if (currentPage === 'calendar') renderCalendar();
+  if (modalKey) renderModal(modalKey);
+}
+
+function showToast(msg) {
+  var t = document.getElementById('notifToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
+document.getElementById('modalOverlay').addEventListener('click', function(e){
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  modalKey = null;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+setOnline(false);
+startFirestoreListener();
+if ('Notification' in window && Notification.permission === 'granted') startNotifWatcher();
+</script>
+</body>
+</html>
