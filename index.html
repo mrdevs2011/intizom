@@ -232,18 +232,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .header-card{background:linear-gradient(145deg,var(--bg2),var(--bg3));border:0.5px solid var(--border2);border-radius:var(--radius);padding:20px;margin-bottom:14px;position:relative;overflow:hidden;}
 .header-card::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:radial-gradient(circle,rgba(29,158,117,0.08) 0%,transparent 70%);pointer-events:none;}
 .streak-row{display:flex;align-items:baseline;gap:8px;margin-bottom:2px;}
-.streak-num{font-size:54px;font-weight:800;color:var(--green);line-height:1;font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.03em;}
-.streak-suffix{font-size:17px;color:var(--text2);font-weight:500;}
+.streak-num{font-size:64px;font-weight:800;color:var(--green);line-height:1;font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.04em;}
+.streak-suffix{font-size:15px;color:var(--text3);font-weight:400;}
 
 /* === STATS MINI === */
 .stats-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
 .stat-mini{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 10px;text-align:center;}
-.stat-mini-val{font-size:22px;font-weight:800;color:var(--text);font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.02em;}
-.stat-mini-lbl{font-size:9px;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;}
+.stat-mini-val{font-size:20px;font-weight:700;color:var(--text2);font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.02em;}
+.stat-mini-lbl{font-size:9px;color:var(--text4);margin-top:4px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;}
 
 /* === SECTION LABEL === */
-.section-label{font-size:9px;color:var(--text3);letter-spacing:0.14em;text-transform:uppercase;margin:18px 0 9px;font-weight:700;display:flex;align-items:center;gap:8px;}
-.section-label::after{content:'';flex:1;height:0.5px;background:var(--border);}
+.section-label{font-size:10px;color:var(--text4);letter-spacing:0.06em;text-transform:uppercase;margin:22px 0 8px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.section-label::after{display:none;}
 
 /* === PRAYER TIME CARD === */
 .prayer-location-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
@@ -263,11 +263,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .namoz-icon{width:22px;height:22px;margin:0 auto 5px;display:flex;align-items:center;justify-content:center;}
 .namoz-icon svg{width:18px;height:18px;opacity:0.5;}
 .namoz-card.done .namoz-icon svg{opacity:1;}
-.namoz-name{font-size:9px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;}
+.namoz-name{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;}
 .namoz-card.done .namoz-name{color:var(--teal);}
 .namoz-card.late:not(.done) .namoz-name{color:var(--red);}
 .namoz-card.current:not(.done) .namoz-name{color:var(--amber);}
-.namoz-time{font-size:11px;font-weight:700;color:var(--text);margin-top:3px;font-family:var(--mono);}
+.namoz-time{font-size:12px;font-weight:800;color:var(--text);margin-top:4px;font-family:var(--mono);}
 
 /* === TASKS === */
 .tasks-list{display:flex;flex-direction:column;gap:7px;}
@@ -280,8 +280,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .task-item.done .task-circle{background:var(--green);border-color:var(--green);}
 .task-item.done .task-circle svg{opacity:1;}
 .task-info{flex:1;}
-.task-name{font-size:14px;font-weight:600;color:var(--text);}
-.task-meta{font-size:11px;color:var(--text3);margin-top:2px;font-family:var(--mono);}
+.task-name{font-size:15px;font-weight:700;color:var(--text);}
+.task-meta{font-size:10px;color:var(--text4);margin-top:3px;font-family:var(--mono);}
 .task-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;font-family:var(--mono);letter-spacing:0.04em;}
 .badge-js{background:rgba(58,123,213,0.15);color:#7AAAF0;}
 .badge-vim{background:rgba(140,130,240,0.15);color:#BEB8F5;}
@@ -763,7 +763,7 @@ initFirebase();
 // ============================================================
 // CONSTANTS
 // ============================================================
-const START = new Date('2026-06-23T00:00:00');
+const START = new Date('2026-07-24T00:00:00');
 const END   = new Date('2026-09-01T00:00:00');
 const TOTAL_DAYS = 70; // loyiha uchun yetarli maksimum
 const LATE_AFTER_MIN = 90;
