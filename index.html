@@ -1772,11 +1772,10 @@ function renderHelp() {
   // Tips
   html += '<div class="section-label">Maslahatlar</div>';
   var tips = [
-    { title: 'Namozni vaqtida o\'qish', body: 'Har namoz uchun <strong>90 daqiqa</strong> oynasi bor. Vaqt kirishi bilan imkon bo\'lgan tezda o\'qish afzal. Kechiktirish odat bo\'lib qoladi.' },
-    { title: 'Qarz emas, tartib', body: 'O\'tkazib yuborilgan namozlar "qarz" sifatida saqlanadi. Maqsad — uni ko\'paytirmaslik, lekin botibdan o\'qish ham qazo hisoblanadi.' },
-    { title: 'Eslatmalar yoqish', body: 'Bugun tabidan <strong>Eslatmalar</strong> tugmasini bosib, brauzer bildirishnomalarini yoqing. Har namoz vaqtida signal keladi.' },
-    { title: 'Vaqtlar manbayi', body: 'Barcha namoz vaqtlari <strong>islom.uz</strong> saytidan olingan — Andijon uchun rasmiy va aniq jadval. 23 iyun – 1 sentabr 2026 oralig\'i to\'liq qamrab olingan.' },
-    { title: 'Yakshanba — maxsus kun', body: 'Yakshanbada faqat namoz talab qilinadi. Vazifalar bo\'lmaydi. Xohlaganing qil — bu ruhiy tiklanish kuni.' },
+    { title: "Bomdoddan keyingi blok eng muhim", body: "Ertalab 03:30–07:30 — bu <strong>Deep Work</strong> vaqti. Miyangiz eng toza, diqqat eng yuqori. JS ni shu vaqtda oʼrganing." },
+    { title: "Namoz bloklari qisqa, lekin zarur", body: "Har namoz uchun 10–20 daqiqa ajratilgan. Namoz oʼqib, 3–5 daqiqa zikr qiling. Keyin ishga qayting." },
+    { title: "Vim — alohida 1 soat", body: "Tushdan keyin 13:30–14:30 da Vim kursi. Bu vaqt miyangiz biroz charchagan, ammo mexanik mashq uchun ideal." },
+    { title: "Kecha — Quron va Hadis", body: "20:00–22:00 da ekrandan uzoq turing — Quron tilovat qiling, hadis oʼqing. Bu uyqu sifatini oshiradi." },
   ];
   tips.forEach(function(tip) {
     html += '<div class="help-tip-card">' +
@@ -1840,49 +1839,49 @@ function getAndozaRows() {
   return [
     {
       id: 'bomdod', name: 'Bomdod', sub: 'Namoz + Zikr',
-      timeStr: namoz[0] + '\u2013' + addMins(namoz[0], 15), dur: '15 daqiqa',
+      timeStr: namoz[0] + '-' + addMins(namoz[0], 15), dur: '15 daqiqa',
       iconKey: 'moon', iconColor: '#6B8ED6', iconBg: 'rgba(107,142,214,0.12)',
       type: 'namoz', startTime: namoz[0], endTime: addMins(namoz[0], 15)
     },
     {
-      id: 'js', name: 'JS o\u02bcrganing', sub: 'JavaScript \u00b7 Deep work',
-      timeStr: t[0] + '\u2013' + t[1], dur: dur(t[0], t[1]),
+      id: 'js', name: 'JS oʼrganing', sub: 'JavaScript · Deep work',
+      timeStr: t[0] + '-' + t[1], dur: dur(t[0], t[1]),
       iconKey: 'code', iconColor: '#7AAAF0', iconBg: 'rgba(58,123,213,0.12)',
       type: 'task', startTime: t[0], endTime: t[1]
     },
     {
       id: 'peshin', name: 'Peshin', sub: 'Namoz + Zikr',
-      timeStr: namoz[1] + '\u2013' + addMins(namoz[1], 17), dur: '17 daqiqa',
+      timeStr: namoz[1] + '-' + addMins(namoz[1], 17), dur: '17 daqiqa',
       iconKey: 'sun', iconColor: '#F5C842', iconBg: 'rgba(245,200,66,0.12)',
       type: 'namoz', startTime: namoz[1], endTime: addMins(namoz[1], 17)
     },
     {
       id: 'vim', name: 'Vim kursi', sub: 'Amaliyot',
-      timeStr: t[2] + '\u2013' + t[3], dur: dur(t[2], t[3]),
+      timeStr: t[2] + '-' + t[3], dur: dur(t[2], t[3]),
       iconKey: 'terminal', iconColor: '#BEB8F5', iconBg: 'rgba(140,130,240,0.12)',
       type: 'task', startTime: t[2], endTime: t[3]
     },
     {
       id: 'asr', name: 'Asr', sub: 'Namoz + Zikr',
-      timeStr: namoz[2] + '\u2013' + addMins(namoz[2], 10), dur: '10 daqiqa',
+      timeStr: namoz[2] + '-' + addMins(namoz[2], 10), dur: '10 daqiqa',
       iconKey: 'cloud', iconColor: '#8DB8D6', iconBg: 'rgba(141,184,214,0.12)',
       type: 'namoz', startTime: namoz[2], endTime: addMins(namoz[2], 10)
     },
     {
       id: 'shom', name: 'Shom', sub: 'Namoz + Zikr',
-      timeStr: namoz[3] + '\u2013' + addMins(namoz[3], 12), dur: '12 daqiqa',
+      timeStr: namoz[3] + '-' + addMins(namoz[3], 12), dur: '12 daqiqa',
       iconKey: 'sunset', iconColor: '#E88A3A', iconBg: 'rgba(232,138,58,0.12)',
       type: 'namoz', startTime: namoz[3], endTime: addMins(namoz[3], 12)
     },
     {
-      id: 'din', name: 'Quron & Hadis', sub: 'O\u02bcqish \u00b7 Islomiy ilm',
-      timeStr: t[4] + '\u2013' + t[5], dur: dur(t[4], t[5]),
+      id: 'din', name: 'Quron & Hadis', sub: 'Oʼqish · Islomiy ilm',
+      timeStr: t[4] + '-' + t[5], dur: dur(t[4], t[5]),
       iconKey: 'book', iconColor: '#F0C870', iconBg: 'rgba(232,160,32,0.12)',
       type: 'task', startTime: t[4], endTime: t[5]
     },
     {
       id: 'xufton', name: 'Xufton', sub: 'Namoz + Zikr',
-      timeStr: namoz[4] + '\u2013' + addMins(namoz[4], 15), dur: '15 daqiqa',
+      timeStr: namoz[4] + '-' + addMins(namoz[4], 15), dur: '15 daqiqa',
       iconKey: 'stars', iconColor: '#9B7ED6', iconBg: 'rgba(155,126,214,0.12)',
       type: 'namoz', startTime: namoz[4], endTime: addMins(namoz[4], 15)
     },
@@ -2013,12 +2012,6 @@ function renderAndoza() {
 
   // Tips
   html += '<div class="section-label">Maslahatlar</div>';
-  var tips = [
-    { title: 'Bomdoddan keyingi blok eng muhim', body: 'Ertalab 03:30–07:30 — bu <strong>Deep Work</strong> vaqti. Miyangiz eng toza, diqqat eng yuqori. JS ni shu vaqtda o'rganing.' },
-    { title: 'Namoz bloklari qisqa, lekin zarur', body: 'Har namoz uchun 10–20 daqiqa ajratilgan. Namoz o'qib, 3–5 daqiqa zikr qiling. Keyin ishga qayting.' },
-    { title: 'Vim — alohida 1 soat', body: 'Tushdan keyin 13:30–14:30 da Vim kursi. Bu vaqt miyangiz biroz charchagan, ammo mexanik mashq uchun ideal.' },
-    { title: 'Kecha — Quron va Hadis', body: '20:00–22:00 da ekrandan uzoq turing — Quron tilovat qiling, hadis o'qing. Bu uyqu sifatini oshiradi.' },
-  ];
   tips.forEach(function(tip){
     html += '<div class="andoza-tip"><strong>' + tip.title + '</strong><br>' + tip.body + '</div>';
   });
