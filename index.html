@@ -335,6 +335,38 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 /* === SAVING INDICATOR === */
 .saving-pill{position:fixed;bottom:20px;right:18px;background:var(--green);border-radius:20px;padding:6px 12px;font-size:11px;font-weight:700;color:#fff;font-family:var(--mono);opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:200;}
 .saving-pill.show{opacity:1;}
+
+/* === ANDOZA PAGE === */
+.andoza-header{background:linear-gradient(145deg,var(--bg2),var(--bg3));border:0.5px solid var(--border2);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
+.andoza-header-title{font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-0.02em;}
+.andoza-header-sub{font-size:13px;color:var(--text3);line-height:1.5;}
+.andoza-table{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;}
+.andoza-table-head{display:grid;grid-template-columns:1fr 1fr;border-bottom:0.5px solid var(--border2);}
+.andoza-th{padding:12px 16px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;}
+.andoza-th:first-child{color:var(--green);border-right:0.5px solid var(--border2);}
+.andoza-th:last-child{color:var(--red);}
+.andoza-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:0.5px solid var(--border);}
+.andoza-row:last-child{border-bottom:none;}
+.andoza-row:hover{background:rgba(255,255,255,0.02);}
+.andoza-cell{padding:14px 16px;}
+.andoza-cell:first-child{border-right:0.5px solid var(--border);display:flex;align-items:center;gap:10px;}
+.andoza-cell-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.andoza-cell-icon svg{width:14px;height:14px;}
+.andoza-cell-name{font-size:14px;font-weight:600;color:var(--text);}
+.andoza-cell-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.andoza-cell-time{font-size:15px;font-weight:700;color:var(--text);font-family:var(--mono);letter-spacing:-0.01em;}
+.andoza-cell-dur{font-size:11px;color:var(--text3);margin-top:3px;font-family:var(--mono);}
+.andoza-now{background:var(--green2);border-left:2px solid var(--green);}
+.andoza-now .andoza-cell-time{color:var(--green);}
+.andoza-tip{background:var(--bg2);border:0.5px solid var(--border);border-left:2px solid var(--amber);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;font-size:12px;color:var(--text3);line-height:1.7;}
+.andoza-tip strong{color:var(--text2);}
+.andoza-progress-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.andoza-progress-label{font-size:12px;color:var(--text2);font-weight:600;min-width:90px;}
+.andoza-progress-bar{flex:1;height:5px;background:var(--bg4);border-radius:3px;}
+.andoza-progress-fill{height:100%;border-radius:3px;transition:width 0.5s ease;}
+.andoza-progress-pct{font-size:11px;color:var(--text3);font-family:var(--mono);min-width:30px;text-align:right;}
+.andoza-live-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green2);border:0.5px solid rgba(29,158,117,0.3);border-radius:20px;padding:4px 10px;font-size:10px;font-weight:700;color:var(--green);font-family:var(--mono);}
+.andoza-live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite;}
 </style>
 </head>
 <body>
@@ -360,6 +392,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
       <button class="nav-tab" id="tab-stats" onclick="APP.showPage('stats')">Statistika</button>
       <button class="nav-tab" id="tab-calendar" onclick="APP.showPage('calendar')">Kalendar</button>
       <button class="nav-tab" id="tab-help" onclick="APP.showPage('help')">Yordam</button>
+      <button class="nav-tab" id="tab-andoza" onclick="APP.showPage('andoza')">Andoza</button>
     </div>
   </div>
 
@@ -389,6 +422,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 
   <div class="page" id="page-calendar">
     <div id="calContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
+  </div>
+
+  <div class="page" id="page-andoza">
+    <div id="andozaContent"><div class="loading"><div class="spinner"></div><span>Yuklanmoqda...</span></div></div>
   </div>
 
   <div class="page" id="page-help">
@@ -434,11 +471,20 @@ const USER_ID = 'user_main';
 
 // Reklama bloker aniqlash
 var _adblockDetected = false;
+var _adblockCheckDone = false;
 (function(){
-  var testUrl = 'https://firestore.googleapis.com/favicon.ico';
-  fetch(testUrl, { method: 'HEAD', mode: 'no-cors' }).catch(function(){
-    _adblockDetected = true;
-  });
+  // Firestore WebChannel endpoint'ini to'g'ridan-to'g'ri test qilish
+  var testUrl = 'https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&RID=rpc&CVER=22&zx=adtest&t=1';
+  fetch(testUrl, { method: 'GET', mode: 'no-cors', cache: 'no-store' })
+    .then(function(){ _adblockCheckDone = true; })
+    .catch(function(){
+      _adblockDetected = true;
+      _adblockCheckDone = true;
+    });
+  // 3 soniyadan keyin ham javob kelmasa — bloklangan deb hisoblash
+  setTimeout(function(){
+    if (!_adblockCheckDone) { _adblockDetected = true; _adblockCheckDone = true; }
+  }, 3000);
 })();
 
 // Firebase modular SDK init (type="module" script yuklangandan keyin)
@@ -562,6 +608,7 @@ var prayerLocation = null;
 var journalSearch = '';
 var expandedJournalKey = null;
 var helpCountdownTimer = null;
+var andozaClockTimer = null;
 
 // ============================================================
 // UTILITIES
@@ -901,14 +948,16 @@ function startFirestoreListener() {
         renderCurrentPage();
       },
       function(err) {
-        // ERR_BLOCKED_BY_CLIENT (adblocker) yoki tarmoq xatosi
-        if (err && err.code === 'unavailable') {
-          setOnline(false);
-        } else {
-          setOnline(false);
-          if (_adblockDetected) {
-            showToast("Reklama bloker Firestore ni to'sib qo'ydi — offline rejim.");
-          }
+        setOnline(false);
+        var msg = err ? (err.message || '') : '';
+        var isBlocked = _adblockDetected ||
+          msg.indexOf('BLOCKED') > -1 ||
+          msg.indexOf('ERR_BLOCKED') > -1 ||
+          (err && err.code === 'unavailable');
+        if (isBlocked) {
+          showToast("Reklama bloker aniqlandi — offline rejimda ishlayapsiz.");
+        } else if (err && err.code) {
+          showToast("Ulanish xatosi: " + (err.code || 'nomalum'));
         }
         renderCurrentPage();
       }
@@ -926,8 +975,10 @@ function saveDay(key, data) {
     .then(function(){ hideSaving(); })
     .catch(function(err){
       hideSaving();
-      if (err && (err.code === 'unavailable' || err.message.includes('BLOCKED'))) {
-        showToast("Reklama bloker to'sdi. Brauzer keshida saqlandi.");
+      var emsg = err ? (err.message || '') : '';
+      if (_adblockDetected || emsg.indexOf('BLOCKED') > -1 ||
+          emsg.indexOf('ERR_BLOCKED') > -1 || (err && err.code === 'unavailable')) {
+        showToast("Offline saqlash: reklama bloker to'sgan, lokal keshda.");
       } else {
         showToast('Saqlash xatosi: ' + (err.message || err));
       }
@@ -960,6 +1011,7 @@ APP.showPage = function(id) {
   document.getElementById('tab-' + id).classList.add('active');
   currentPage = id;
   if (helpCountdownTimer) { clearInterval(helpCountdownTimer); helpCountdownTimer = null; }
+  if (andozaClockTimer) { clearInterval(andozaClockTimer); andozaClockTimer = null; }
   renderCurrentPage();
 };
 
@@ -1749,6 +1801,240 @@ function renderHelp() {
 // ============================================================
 // HELPERS
 // ============================================================
+
+// ============================================================
+// RENDER: ANDOZA PAGE
+// ============================================================
+var andozaClockTimer = null;
+
+// ============================================================
+// ANDOZA TASK TIMES — [js_start, js_end, vim_start, vim_end, din_start, din_end]
+// Har kun uchun alohida vaqt belgilash mumkin.
+// Default: JS 03:30-07:30, Vim 13:30-14:30, Din 20:00-22:00
+// ============================================================
+const ANDOZA_TIMES = {
+  // "YYYY-MM-DD": ["js_start","js_end","vim_start","vim_end","din_start","din_end"]
+  // Agar kun uchun yozilmasa — DEFAULT_ANDOZA ishlatiladi
+};
+const DEFAULT_ANDOZA = ["03:30","07:30","13:30","14:30","20:00","22:00"];
+
+function getAndozaRows() {
+  var tk = todayKey();
+  // Namoz vaqtlari — ISLOM_TIMES JSON dan (har kun o'zgaradi)
+  var namoz = ISLOM_TIMES[tk]
+    ? ISLOM_TIMES[tk]
+    : [NAMOZLAR[0].time, NAMOZLAR[1].time, NAMOZLAR[2].time, NAMOZLAR[3].time, NAMOZLAR[4].time];
+  // [0]=bomdod [1]=peshin [2]=asr [3]=shom [4]=xufton
+
+  // Task vaqtlari — ANDOZA_TIMES JSON dan (kun bo'yicha yoki default)
+  var t = ANDOZA_TIMES[tk] || DEFAULT_ANDOZA;
+  // [0]=js_start [1]=js_end [2]=vim_start [3]=vim_end [4]=din_start [5]=din_end
+
+  function dur(s, e) {
+    var diff = timeToMins(e) - timeToMins(s);
+    if (diff <= 0) diff += 1440;
+    var h = Math.floor(diff/60), m = diff%60;
+    return h > 0 ? (h + ' soat' + (m ? ' ' + m + ' daq' : '')) : (m + ' daqiqa');
+  }
+
+  return [
+    {
+      id: 'bomdod', name: 'Bomdod', sub: 'Namoz + Zikr',
+      timeStr: namoz[0] + '\u2013' + addMins(namoz[0], 15), dur: '15 daqiqa',
+      iconKey: 'moon', iconColor: '#6B8ED6', iconBg: 'rgba(107,142,214,0.12)',
+      type: 'namoz', startTime: namoz[0], endTime: addMins(namoz[0], 15)
+    },
+    {
+      id: 'js', name: 'JS o\u02bcrganing', sub: 'JavaScript \u00b7 Deep work',
+      timeStr: t[0] + '\u2013' + t[1], dur: dur(t[0], t[1]),
+      iconKey: 'code', iconColor: '#7AAAF0', iconBg: 'rgba(58,123,213,0.12)',
+      type: 'task', startTime: t[0], endTime: t[1]
+    },
+    {
+      id: 'peshin', name: 'Peshin', sub: 'Namoz + Zikr',
+      timeStr: namoz[1] + '\u2013' + addMins(namoz[1], 17), dur: '17 daqiqa',
+      iconKey: 'sun', iconColor: '#F5C842', iconBg: 'rgba(245,200,66,0.12)',
+      type: 'namoz', startTime: namoz[1], endTime: addMins(namoz[1], 17)
+    },
+    {
+      id: 'vim', name: 'Vim kursi', sub: 'Amaliyot',
+      timeStr: t[2] + '\u2013' + t[3], dur: dur(t[2], t[3]),
+      iconKey: 'terminal', iconColor: '#BEB8F5', iconBg: 'rgba(140,130,240,0.12)',
+      type: 'task', startTime: t[2], endTime: t[3]
+    },
+    {
+      id: 'asr', name: 'Asr', sub: 'Namoz + Zikr',
+      timeStr: namoz[2] + '\u2013' + addMins(namoz[2], 10), dur: '10 daqiqa',
+      iconKey: 'cloud', iconColor: '#8DB8D6', iconBg: 'rgba(141,184,214,0.12)',
+      type: 'namoz', startTime: namoz[2], endTime: addMins(namoz[2], 10)
+    },
+    {
+      id: 'shom', name: 'Shom', sub: 'Namoz + Zikr',
+      timeStr: namoz[3] + '\u2013' + addMins(namoz[3], 12), dur: '12 daqiqa',
+      iconKey: 'sunset', iconColor: '#E88A3A', iconBg: 'rgba(232,138,58,0.12)',
+      type: 'namoz', startTime: namoz[3], endTime: addMins(namoz[3], 12)
+    },
+    {
+      id: 'din', name: 'Quron & Hadis', sub: 'O\u02bcqish \u00b7 Islomiy ilm',
+      timeStr: t[4] + '\u2013' + t[5], dur: dur(t[4], t[5]),
+      iconKey: 'book', iconColor: '#F0C870', iconBg: 'rgba(232,160,32,0.12)',
+      type: 'task', startTime: t[4], endTime: t[5]
+    },
+    {
+      id: 'xufton', name: 'Xufton', sub: 'Namoz + Zikr',
+      timeStr: namoz[4] + '\u2013' + addMins(namoz[4], 15), dur: '15 daqiqa',
+      iconKey: 'stars', iconColor: '#9B7ED6', iconBg: 'rgba(155,126,214,0.12)',
+      type: 'namoz', startTime: namoz[4], endTime: addMins(namoz[4], 15)
+    },
+  ];
+}
+
+function addMins(timeStr, mins) {
+  var parts = timeStr.split(':');
+  var h = parseInt(parts[0], 10);
+  var m = parseInt(parts[1], 10) + mins;
+  h += Math.floor(m / 60);
+  m = m % 60;
+  if (h >= 24) h -= 24;
+  return pad(h) + ':' + pad(m);
+}
+
+function timeToMins(t) {
+  var p = t.split(':');
+  return parseInt(p[0],10)*60 + parseInt(p[1],10);
+}
+
+function getCurrentAndozaIdx(rows) {
+  var now = new Date();
+  var nowMins = now.getHours()*60 + now.getMinutes();
+  for (var i = 0; i < rows.length; i++) {
+    var s = timeToMins(rows[i].startTime);
+    var e = timeToMins(rows[i].endTime);
+    // bomdod special: might be before midnight wrap
+    if (nowMins >= s && nowMins < e) return i;
+  }
+  // Find next upcoming
+  for (var i = 0; i < rows.length; i++) {
+    if (timeToMins(rows[i].startTime) > nowMins) return i;
+  }
+  return -1;
+}
+
+function renderAndoza() {
+  var rows = getAndozaRows();
+  var now = new Date();
+  var tk = todayKey();
+  var ds = state[tk] || {};
+  var nowMins = now.getHours()*60 + now.getMinutes();
+  var activeIdx = getCurrentAndozaIdx(rows);
+
+  // Progress: how many blocks done today
+  var namozDone = NAMOZLAR.filter(function(n){ return ds['n_'+n.id]; }).length;
+  var taskDone = TASKS.filter(function(t){ return ds['t_'+t.id]; }).length;
+  var namozTotal = NAMOZLAR.length;
+  var taskTotal = TASKS.length;
+
+  var html = '';
+
+  // Header
+  html += '<div class="andoza-header">' +
+    '<div class="andoza-header-title">Kunlik andoza</div>' +
+    '<div class="andoza-header-sub">Har kun uchun tavsiya etilgan vaqt rejasi. ' +
+    'Bugungi namoz vaqtlari avtomatik yangilanadi.</div>' +
+    '</div>';
+
+  // Live clock + current block badge
+  var currentRow = activeIdx >= 0 ? rows[activeIdx] : null;
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">';
+  html += '<div style="font-size:28px;font-weight:800;color:var(--text);font-family:var(--mono);letter-spacing:-0.02em;" id="andozaClock">' +
+    pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds()) + '</div>';
+  if (currentRow) {
+    html += '<div class="andoza-live-badge"><div class="andoza-live-dot"></div>' + currentRow.name + '</div>';
+  }
+  html += '</div>';
+
+  // Daily progress bars
+  html += '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px;">';
+  html += '<div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:12px;">Bugungi progress</div>';
+
+  var namozPct = Math.round((namozDone/namozTotal)*100);
+  var taskPct = Math.round((taskDone/taskTotal)*100);
+  html += '<div class="andoza-progress-row">' +
+    '<div class="andoza-progress-label">Namoz</div>' +
+    '<div class="andoza-progress-bar"><div class="andoza-progress-fill" style="width:'+namozPct+'%;background:var(--green)"></div></div>' +
+    '<div class="andoza-progress-pct">'+namozDone+'/'+namozTotal+'</div>' +
+    '</div>';
+  html += '<div class="andoza-progress-row">' +
+    '<div class="andoza-progress-label">Vazifalar</div>' +
+    '<div class="andoza-progress-bar"><div class="andoza-progress-fill" style="width:'+taskPct+'%;background:var(--blue)"></div></div>' +
+    '<div class="andoza-progress-pct">'+taskDone+'/'+taskTotal+'</div>' +
+    '</div>';
+  html += '</div>';
+
+  // Schedule table
+  html += '<div class="section-label">Jadval</div>';
+  html += '<div class="andoza-table">';
+  html += '<div class="andoza-table-head">' +
+    '<div class="andoza-th">ISH</div>' +
+    '<div class="andoza-th" style="color:var(--red);">VAQT</div>' +
+    '</div>';
+
+  rows.forEach(function(row, idx) {
+    var isActive = idx === activeIdx;
+    var isDone = false;
+    if (row.type === 'namoz') isDone = !!ds['n_'+row.id];
+    else if (row.id === 'js') isDone = !!ds['t_js'];
+    else if (row.id === 'vim') isDone = !!ds['t_vim'];
+    else if (row.id === 'din') isDone = !!ds['t_din'];
+
+    var isPast = timeToMins(row.endTime) < nowMins && !isActive;
+
+    html += '<div class="andoza-row' + (isActive ? ' andoza-now' : '') + '">';
+
+    // Left cell
+    html += '<div class="andoza-cell">' +
+      '<div class="andoza-cell-icon" style="background:'+row.iconBg+';color:'+row.iconColor+'">' + ICONS[row.iconKey] + '</div>' +
+      '<div>' +
+        '<div class="andoza-cell-name" style="' + (isDone ? 'text-decoration:line-through;opacity:0.5' : (isPast&&!isActive ? 'opacity:0.45' : '')) + '">' + row.name + '</div>' +
+        '<div class="andoza-cell-sub">' + row.sub + (isDone ? ' ✓' : '') + '</div>' +
+      '</div>' +
+      '</div>';
+
+    // Right cell
+    html += '<div class="andoza-cell">' +
+      '<div class="andoza-cell-time">' + row.timeStr + '</div>' +
+      '<div class="andoza-cell-dur">' + row.dur + '</div>' +
+      '</div>';
+
+    html += '</div>';
+  });
+
+  html += '</div>';
+
+  // Tips
+  html += '<div class="section-label">Maslahatlar</div>';
+  var tips = [
+    { title: 'Bomdoddan keyingi blok eng muhim', body: 'Ertalab 03:30–07:30 — bu <strong>Deep Work</strong> vaqti. Miyangiz eng toza, diqqat eng yuqori. JS ni shu vaqtda o'rganing.' },
+    { title: 'Namoz bloklari qisqa, lekin zarur', body: 'Har namoz uchun 10–20 daqiqa ajratilgan. Namoz o'qib, 3–5 daqiqa zikr qiling. Keyin ishga qayting.' },
+    { title: 'Vim — alohida 1 soat', body: 'Tushdan keyin 13:30–14:30 da Vim kursi. Bu vaqt miyangiz biroz charchagan, ammo mexanik mashq uchun ideal.' },
+    { title: 'Kecha — Quron va Hadis', body: '20:00–22:00 da ekrandan uzoq turing — Quron tilovat qiling, hadis o'qing. Bu uyqu sifatini oshiradi.' },
+  ];
+  tips.forEach(function(tip){
+    html += '<div class="andoza-tip"><strong>' + tip.title + '</strong><br>' + tip.body + '</div>';
+  });
+
+  document.getElementById('andozaContent').innerHTML = html;
+
+  // Live clock updater
+  if (andozaClockTimer) clearInterval(andozaClockTimer);
+  andozaClockTimer = setInterval(function(){
+    var el = document.getElementById('andozaClock');
+    if (!el) { clearInterval(andozaClockTimer); andozaClockTimer = null; return; }
+    var n = new Date();
+    el.textContent = pad(n.getHours()) + ':' + pad(n.getMinutes()) + ':' + pad(n.getSeconds());
+  }, 1000);
+}
+
 function renderCurrentPage() {
   if (currentPage === 'today') renderToday();
   else if (currentPage === 'debt') renderDebt();
@@ -1757,6 +2043,7 @@ function renderCurrentPage() {
   else if (currentPage === 'stats') renderStats();
   else if (currentPage === 'calendar') renderCalendar();
   else if (currentPage === 'help') renderHelp();
+  else if (currentPage === 'andoza') renderAndoza();
   if (modalKey) renderModal(modalKey);
 }
 
