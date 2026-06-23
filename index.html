@@ -607,6 +607,7 @@ var calYear  = new Date().getFullYear();
 var calMonth = new Date().getMonth();
 var notifTimer = null;
 var unsubscribe = null;
+var unsubscribeWeekly = null;
 var debtFilter = 'all';
 var weeklyOffset = 0;
 var prayerLocation = null;
@@ -968,6 +969,21 @@ function startFirestoreListener() {
         renderCurrentPage();
       }
     );
+    // Haftalik jurnal — alohida collection ('weekly'), chunki dayId
+    // formati ('YYYY-MM-DD') ga to'g'ri kelmaydi. Local state'da
+    // moslik uchun '_week_' prefiksi bilan saqlanadi (eski kalit nomi).
+    if (unsubscribeWeekly) { try { unsubscribeWeekly(); } catch(e){} }
+    var weeklyColRef = fm.collection(db, 'users', USER_ID, 'weekly');
+    unsubscribeWeekly = fm.onSnapshot(weeklyColRef,
+      function(snapshot) {
+        snapshot.docChanges().forEach(function(change) {
+          if (change.type === 'removed') delete state['_week_' + change.doc.id];
+          else state['_week_' + change.doc.id] = change.doc.data();
+        });
+        renderCurrentPage();
+      },
+      function(err) { /* kichik bo'lim — asosiy bannerga ta'sir qilmasin */ }
+    );
   } catch(e) { setOnline(false); renderCurrentPage(); }
 }
 
@@ -1061,10 +1077,18 @@ APP.saveWeeklyJournal = function(weekKey, value) {
   if (!isOnline || !db || !fm) { showToast("Offline. Haftalik jurnal saqlanmadi."); return; }
   if (!state['_week_' + weekKey]) state['_week_' + weekKey] = {};
   state['_week_' + weekKey]['journal'] = value;
-  var docRef = fm.doc(db, 'users', USER_ID, 'days', '_week_' + weekKey);
+  var docRef = fm.doc(db, 'users', USER_ID, 'weekly', weekKey);
   fm.setDoc(docRef, state['_week_' + weekKey], { merge: true })
     .then(function(){ showToast('Haftalik jurnal saqlandi ✓'); })
-    .catch(function(err){ showToast('Saqlash xatosi: ' + (err.message || err)); });
+    .catch(function(err){
+      var emsg = err ? (err.message || '') : '';
+      if (_adblockDetected || emsg.indexOf('BLOCKED') > -1 ||
+          emsg.indexOf('ERR_BLOCKED') > -1 || (err && err.code === 'unavailable')) {
+        showToast("Offline saqlash: reklama bloker to'sgan, lokal keshda.");
+      } else {
+        showToast('Saqlash xatosi: ' + (err.message || err));
+      }
+    });
 };
 
 APP.openModal = function(key) {
