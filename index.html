@@ -514,7 +514,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .notif-toast.show{opacity:1;}
 
 /* === SAVING INDICATOR === */
-.saving-pill{position:fixed;bottom:20px;right:18px;background:var(--green);border-radius:20px;padding:6px 12px;font-size:11px;font-weight:700;color:#fff;font-family:var(--mono);opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:200;}
+.saving-pill{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 84px);right:18px;background:var(--green);border-radius:20px;padding:6px 12px;font-size:11px;font-weight:700;color:#fff;font-family:var(--mono);opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:200;}
 .saving-pill.show{opacity:1;}
 
 /* === ANDOZA PAGE === */
@@ -1244,7 +1244,6 @@ function startFirestoreListener() {
 function saveDay(key, data) {
   var fm = window.__fm;
   if (!db || !fm) { showToast("Firebase yuklanmadi."); return; }
-  if (!isOnline) { showToast("Offline. Ma'lumot cache ga saqlandi."); return; }
   showSaving();
   var docRef = fm.doc(db, 'users', USER_ID, 'days', key);
   fm.setDoc(docRef, data, { merge: true })
@@ -1312,7 +1311,6 @@ APP.showPage = function(id) {
 };
 
 APP.toggleNamoz = function(id, key) {
-  if (!isOnline) { showToast("Offline. Avval tarmoqqa ulaning."); return; }
   if (isNamozLocked(id, key)) {
     if (isNamozLockedByTime(id, key)) showToast('Bu namoz vaqti hali kelmagan — sabr qiling.');
     else showToast("Bu kun qulflangan — o'zgartirish mumkin emas.");
@@ -1326,7 +1324,6 @@ APP.toggleNamoz = function(id, key) {
 };
 
 APP.toggleTask = function(id, key) {
-  if (!isOnline) { showToast("Offline. Avval tarmoqqa ulaning."); return; }
   if (isTaskLocked(key)) {
     showToast("Bu kun qulflangan — faqat bugun va kecha tahrirlanadi.");
     return;
@@ -1341,7 +1338,6 @@ APP.toggleTask = function(id, key) {
 APP.addJournalEntry = function(key, value) {
   value = (value || '').trim();
   if (!value) return;
-  if (!isOnline) { showToast("Offline. Yozuv saqlanmadi."); return; }
   if (isPastDayLocked(key)) { showToast("Bu kun qulflangan."); return; }
   if (!state[key]) state[key] = {};
   var entries = getJournalEntries(state[key]).slice();
@@ -1357,7 +1353,7 @@ APP.addWeeklyJournalEntry = function(weekKey, value) {
   value = (value || '').trim();
   if (!value) return;
   var fm = window.__fm;
-  if (!isOnline || !db || !fm) { showToast("Offline. Haftalik jurnal saqlanmadi."); return; }
+  if (!db || !fm) { showToast("Firebase yuklanmadi."); return; }
   var sKey = '_week_' + weekKey;
   if (!state[sKey]) state[sKey] = {};
   var entries = getJournalEntries(state[sKey]).slice();
@@ -1699,7 +1695,7 @@ function renderWeekly() {
     });
     html += '</div>';
   }
-  html += '<textarea class="wr-journal-textarea" id="weeklyJournalInput" placeholder="Bu hafta qanday o\'tdi? Nimani yaxshi qilding? Nimani yaxshilash kerak?"></textarea>' +
+  html += '<textarea class="wr-journal-textarea" id="weeklyJournalInput" placeholder="' + (weeklyOffset === 0 ? "Bu hafta qanday o'tdi?" : 'Shu hafta haqida qo\'shish...') + '"></textarea>' +
     '<button class="wr-journal-save" onclick="APP.addWeeklyJournalEntry(\'' + weekKey + '\', document.getElementById(\'weeklyJournalInput\').value); document.getElementById(\'weeklyJournalInput\').value=\'\';">Qo\'shish</button>' +
     '</div>';
   html += '</div>';
@@ -1741,7 +1737,7 @@ function renderJournal() {
   }
   var filtered = allEntries.filter(function(e) {
     var joined = e.entries.map(function(en){ return en.t; }).join(' ');
-    if (!journalSearch) return joined.length > 0 || e.key === todayKey();
+    if (!journalSearch) return e.entries.length > 0 || e.key === todayKey() || !isPastDayLocked(e.key);
     return joined.toLowerCase().indexOf(journalSearch.toLowerCase()) > -1;
   }).reverse();
   var withText = allEntries.filter(function(e){ return e.entries.length > 0; }).length;
@@ -1914,10 +1910,11 @@ function renderCalendar() {
     if (!inRange) cls += ' outside-range';
     else if (isFuture) cls += ' future';
     else if (isDayComplete(key)) cls += ' completed';
-    else if (isToday) cls += ' today';
-    else if (isSun) cls += ' sunday-rest';
-    else if (isDayPartial(key)) cls += ' partial';
+    else if (isSun && !isToday) cls += ' sunday-rest';
+    else if (isDayPartial(key) || isToday) cls += ' partial';
     else cls += ' failed';
+    // Bugun doim alohida border bilan ajralib tursin
+    if (isToday) cls += ' today';
     var clickable = inRange && !isFuture;
     html += '<div class="' + cls + '"' + (clickable ? ' onclick="APP.openModal(\'' + key + '\')"' : '') + '>' + day + '</div>';
   }
@@ -1970,9 +1967,12 @@ function renderModal(key) {
     html += '<div class="section-label">Vazifalar</div><div class="modal-tasks">';
     TASKS.forEach(function(t) {
       var done = !!ds['t_' + t.id];
-      html += '<div class="modal-task ' + (done?'done':'') + '" onclick="APP.toggleTask(\'' + t.id + '\',\'' + key + '\')">' +
+      var tlocked = locked;
+      html += '<div class="modal-task ' + (done?'done ':'') + (tlocked?'locked':'') + '" onclick="APP.toggleTask(\'' + t.id + '\',\'' + key + '\')"' + (tlocked?' style="opacity:0.35;cursor:not-allowed;pointer-events:none"':'') + '>' +
         '<div class="mt-circle"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
-        '<div class="mt-info"><div class="mt-name">' + t.name + '</div><div class="mt-meta">' + t.meta + '</div></div></div>';
+        '<div class="mt-info"><div class="mt-name">' + t.name + '</div><div class="mt-meta">' + t.meta + '</div></div>' +
+        (tlocked ? '<div style="font-size:10px;color:var(--text3)">' + ICONS.lock.replace('width=','width="14" height="14" ') + '</div>' : '') +
+        '</div>';
     });
     html += '</div>';
   }
