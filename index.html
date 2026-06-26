@@ -284,7 +284,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .task-meta{font-size:10px;color:var(--text4);margin-top:3px;font-family:var(--mono);}
 .task-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;font-family:var(--mono);letter-spacing:0.04em;}
 .badge-js{background:rgba(58,123,213,0.15);color:#7AAAF0;}
-.badge-vim{background:rgba(140,130,240,0.15);color:#BEB8F5;}
+.badge-prac{background:rgba(29,158,117,0.15);color:var(--teal);}
 .badge-din{background:rgba(232,160,32,0.15);color:#F0C870;}
 
 /* === BANNERS === */
@@ -792,7 +792,7 @@ var NAMOZLAR = DEFAULT_TIMES.slice();
 
 const TASKS = [
   { id: 'js',  name: 'JavaScript',        meta: '1 soat',  badge: 'badge-js',  label: 'JS' },
-  { id: 'vim', name: 'Vim mashq',         meta: '1 soat',    badge: 'badge-vim', label: 'Vim' },
+  { id: 'prac', name: 'Amaliy o\'rganish', meta: '1 soat',    badge: 'badge-prac', label: 'Pract' },
   { id: 'din', name: "Islomiy o'rganish", meta: '2 soat',    badge: 'badge-din', label: 'Din' },
 ];
 
@@ -829,6 +829,7 @@ const ICONS = {
   refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>',
   clock:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
   help:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  search:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
 };
 const NAMOZ_ICONS = ['moon','sun','cloud','sunset','stars'];
 const NAMOZ_ICON_COLORS = ['#6B8ED6','#F5C842','#8DB8D6','#E88A3A','#9B7ED6'];
@@ -2114,7 +2115,7 @@ function renderHelp() {
   var tips = [
     { title: "Bomdoddan keyingi blok eng muhim", body: "Ertalab 4:00–5:00 — bu <strong>Deep Work</strong> vaqti. Miyangiz eng toza, diqqat eng yuqori. JS ni shu vaqtda oʼrganing." },
     { title: "Namoz bloklari qisqa, lekin zarur", body: "Har namoz uchun 10–20 daqiqa ajratilgan. Namoz oʼqib, 3–5 daqiqa zikr qiling. Keyin ishga qayting." },
-    { title: "Vim — alohida 1 soat", body: "Tushdan keyin 13:30–14:30 da Vim kursi. Bu vaqt miyangiz biroz charchagan, ammo mexanik mashq uchun ideal." },
+    { title: "Amaliy o'rganish — alohida 1 soat", body: "Tushdan keyin 13:30–14:30 da amaliyot. Bu vaqt miyangiz biroz charchagan, ammo mexanik mashq uchun ideal." },
     { title: "Kecha — Quron va Hadis", body: "20:00–22:00 da ekrandan uzoq turing — Quron tilovat qiling, hadis oʼqing. Bu uyqu sifatini oshiradi." },
   ];
   tips.forEach(function(tip) {
@@ -2138,21 +2139,17 @@ function renderHelp() {
 }
 
 // ============================================================
-// HELPERS
-// ============================================================
-
-// ============================================================
 // RENDER: ANDOZA PAGE
 // ============================================================
 var andozaClockTimer = null;
 
 // ============================================================
-// ANDOZA TASK TIMES — [js_start, js_end, vim_start, vim_end, din_start, din_end]
+// ANDOZA TASK TIMES — [js_start, js_end, prac_start, prac_end, din_start, din_end]
 // Har kun uchun alohida vaqt belgilash mumkin.
-// Default: JS 03:30-07:30, Vim 13:30-14:30, Din 20:00-22:00
+// Default: JS 03:30-07:30, Amaliy 13:30-14:30, Din 20:00-22:00
 // ============================================================
 const ANDOZA_TIMES = {
-  // "YYYY-MM-DD": ["js_start","js_end","vim_start","vim_end","din_start","din_end"]
+  // "YYYY-MM-DD": ["js_start","js_end","prac_start","prac_end","din_start","din_end"]
   // Agar kun uchun yozilmasa — DEFAULT_ANDOZA ishlatiladi
 };
 const DEFAULT_ANDOZA = ["04:00","05:00","13:30","14:30","20:00","22:00"];
@@ -2167,7 +2164,7 @@ function getAndozaRows() {
 
   // Task vaqtlari — ANDOZA_TIMES JSON dan (kun bo'yicha yoki default)
   var t = ANDOZA_TIMES[tk] || DEFAULT_ANDOZA;
-  // [0]=js_start [1]=js_end [2]=vim_start [3]=vim_end [4]=din_start [5]=din_end
+  // [0]=js_start [1]=js_end [2]=prac_start [3]=prac_end [4]=din_start [5]=din_end
 
   function dur(s, e) {
     var diff = timeToMins(e) - timeToMins(s);
@@ -2196,9 +2193,9 @@ function getAndozaRows() {
       type: 'namoz', startTime: namoz[1], endTime: addMins(namoz[1], 17)
     },
     {
-      id: 'vim', name: 'Vim kursi', sub: 'Amaliyot',
+      id: 'prac', name: 'Amaliy oʼrganish', sub: 'Kod orqali izlanish',
       timeStr: t[2] + '-' + t[3], dur: dur(t[2], t[3]),
-      iconKey: 'terminal', iconColor: '#BEB8F5', iconBg: 'rgba(140,130,240,0.12)',
+      iconKey: 'search', iconColor: '#BEB8F5', iconBg: 'rgba(140,130,240,0.12)',
       type: 'task', startTime: t[2], endTime: t[3]
     },
     {
@@ -2323,7 +2320,7 @@ function renderAndoza() {
     var isDone = false;
     if (row.type === 'namoz') isDone = !!ds['n_'+row.id];
     else if (row.id === 'js') isDone = !!ds['t_js'];
-    else if (row.id === 'vim') isDone = !!ds['t_vim'];
+    else if (row.id === 'prac') isDone = !!ds['t_prac'];
     else if (row.id === 'din') isDone = !!ds['t_din'];
 
     var isPast = timeToMins(row.endTime) < nowMins && !isActive;
@@ -2355,7 +2352,7 @@ function renderAndoza() {
   var andozaTips = [
     { title: "Bomdoddan keyingi blok eng muhim", body: "Ertalab 04:00–05:00 — bu <strong>Deep Work</strong> vaqti. Miyangiz eng toza, diqqat eng yuqori. JS ni shu vaqtda oʼrganing." },
     { title: "Namoz bloklari qisqa, lekin zarur", body: "Har namoz uchun 10–20 daqiqa ajratilgan. Namoz oʼqib, 3–5 daqiqa zikr qiling. Keyin ishga qayting." },
-    { title: "Vim — alohida 1 soat", body: "Tushdan keyin 13:30–14:30 da Vim kursi. Bu vaqt miyangiz biroz charchagan, ammo mexanik mashq uchun ideal." },
+    { title: "Amaliy o'rganish — alohida 1 soat", body: "Tushdan keyin 13:30–14:30 da amaliyot. Bu vaqt miyangiz biroz charchagan, ammo mexanik mashq uchun ideal." },
     { title: "Kecha — Quron va Hadis", body: "20:00–22:00 da ekrandan uzoq turing — Quron tilovat qiling, hadis oʼqing. Bu uyqu sifatini oshiradi." },
   ];
   andozaTips.forEach(function(tip){
