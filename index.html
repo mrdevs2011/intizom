@@ -791,7 +791,7 @@ const DEFAULT_TIMES = [
 var NAMOZLAR = DEFAULT_TIMES.slice();
 
 const TASKS = [
-  { id: 'js',  name: 'JavaScript',        meta: '3–4 soat',  badge: 'badge-js',  label: 'JS' },
+  { id: 'js',  name: 'JavaScript',        meta: '1 soat',  badge: 'badge-js',  label: 'JS' },
   { id: 'vim', name: 'Vim mashq',         meta: '1 soat',    badge: 'badge-vim', label: 'Vim' },
   { id: 'din', name: "Islomiy o'rganish", meta: '2 soat',    badge: 'badge-din', label: 'Din' },
 ];
@@ -2112,7 +2112,7 @@ function renderHelp() {
   // Tips
   html += '<div class="section-label">Maslahatlar</div>';
   var tips = [
-    { title: "Bomdoddan keyingi blok eng muhim", body: "Ertalab 03:30–07:30 — bu <strong>Deep Work</strong> vaqti. Miyangiz eng toza, diqqat eng yuqori. JS ni shu vaqtda oʼrganing." },
+    { title: "Bomdoddan keyingi blok eng muhim", body: "Ertalab 4:00–5:00 — bu <strong>Deep Work</strong> vaqti. Miyangiz eng toza, diqqat eng yuqori. JS ni shu vaqtda oʼrganing." },
     { title: "Namoz bloklari qisqa, lekin zarur", body: "Har namoz uchun 10–20 daqiqa ajratilgan. Namoz oʼqib, 3–5 daqiqa zikr qiling. Keyin ishga qayting." },
     { title: "Vim — alohida 1 soat", body: "Tushdan keyin 13:30–14:30 da Vim kursi. Bu vaqt miyangiz biroz charchagan, ammo mexanik mashq uchun ideal." },
     { title: "Kecha — Quron va Hadis", body: "20:00–22:00 da ekrandan uzoq turing — Quron tilovat qiling, hadis oʼqing. Bu uyqu sifatini oshiradi." },
@@ -2155,7 +2155,7 @@ const ANDOZA_TIMES = {
   // "YYYY-MM-DD": ["js_start","js_end","vim_start","vim_end","din_start","din_end"]
   // Agar kun uchun yozilmasa — DEFAULT_ANDOZA ishlatiladi
 };
-const DEFAULT_ANDOZA = ["03:30","07:30","13:30","14:30","20:00","22:00"];
+const DEFAULT_ANDOZA = ["04:00","05:00","13:30","14:30","20:00","22:00"];
 
 function getAndozaRows() {
   var tk = todayKey();
@@ -2353,7 +2353,7 @@ function renderAndoza() {
   // Tips
   html += '<div class="section-label">Maslahatlar</div>';
   var andozaTips = [
-    { title: "Bomdoddan keyingi blok eng muhim", body: "Ertalab 03:30–07:30 — bu <strong>Deep Work</strong> vaqti. Miyangiz eng toza, diqqat eng yuqori. JS ni shu vaqtda oʼrganing." },
+    { title: "Bomdoddan keyingi blok eng muhim", body: "Ertalab 04:00–05:00 — bu <strong>Deep Work</strong> vaqti. Miyangiz eng toza, diqqat eng yuqori. JS ni shu vaqtda oʼrganing." },
     { title: "Namoz bloklari qisqa, lekin zarur", body: "Har namoz uchun 10–20 daqiqa ajratilgan. Namoz oʼqib, 3–5 daqiqa zikr qiling. Keyin ishga qayting." },
     { title: "Vim — alohida 1 soat", body: "Tushdan keyin 13:30–14:30 da Vim kursi. Bu vaqt miyangiz biroz charchagan, ammo mexanik mashq uchun ideal." },
     { title: "Kecha — Quron va Hadis", body: "20:00–22:00 da ekrandan uzoq turing — Quron tilovat qiling, hadis oʼqing. Bu uyqu sifatini oshiradi." },
