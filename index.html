@@ -878,6 +878,30 @@ function formatKey(key) {
   return dayNames[d.getDay()] + ', ' + d.getDate() + ' ' + mNames[d.getMonth()];
 }
 function escapeHtml(s) { return (s || '').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// 👇 BU FUNKSIYANI escapeHtml DAN KEYIN QO'SHING
+function linkifyText(rawText) {
+  if (!rawText) return '';
+  var escaped = (rawText || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  var urlRegex = /https?:\/\/[^\s<>"'\)\]]+/g;
+  return escaped.replace(urlRegex, function(escapedUrl) {
+    var realUrl = escapedUrl.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+    var shortUrl = realUrl.length > 42 ? realUrl.slice(0, 42) + '...' : realUrl;
+    return '<a href="' + realUrl + '" target="_blank" rel="noopener noreferrer" ' +
+      'style="color:var(--green);text-decoration:none;border-bottom:1px solid rgba(29,158,117,0.4);word-break:break-all;" ' +
+      'onclick="event.stopPropagation()">' + shortUrl + '</a>' +
+      '<a href="' + realUrl + '" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" ' +
+      'style="display:inline-flex;align-items:center;gap:2px;margin-left:5px;padding:2px 7px;' +
+      'background:var(--green2);border:0.5px solid rgba(29,158,117,0.4);border-radius:5px;' +
+      'font-size:9px;font-weight:700;color:var(--green);text-decoration:none;' +
+      'vertical-align:middle;font-family:var(--mono);white-space:nowrap;line-height:1.6;">' +
+      '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>' +
+      '<polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+      'ochish</a>';
+  });
+}
+
 // Jurnal yozuvlari ro'yxati. Eski hujjatlarda 'journal' oddiy matn (string)
 // edi — moslik uchun uni bitta yozuvli ro'yxatga aylantiramiz.
 function getJournalEntries(ds) {
@@ -1692,7 +1716,7 @@ function renderWeekly() {
     weeklyEntries.slice().reverse().forEach(function(en) {
       html += '<div class="journal-entry-item">' +
         (en.ts ? '<div class="journal-entry-item-time">' + formatEntryTime(en.ts) + '</div>' : '') +
-        '<div class="journal-entry-item-text">' + escapeHtml(en.t) + '</div></div>';
+        '<div class="journal-entry-item-text">' + linkifyText(en.t) + '</div></div>';
     });
     html += '</div>';
   }
@@ -1763,7 +1787,7 @@ function renderJournal() {
         '<div class="journal-entry-badge" style="background:' + dotColor + '"></div>' +
         '</div>';
       if (lastEntry) {
-        html += '<div class="journal-entry-text">' + escapeHtml(lastEntry.t) + '</div>';
+        html += '<div class="journal-entry-text">' + linkifyText(lastEntry.t) + '</div>';
       } else {
         html += '<div class="journal-entry-text" style="color:var(--text3);font-style:italic">Yozuv yo\'q — bosing va yozing...</div>';
       }
@@ -1773,7 +1797,7 @@ function renderJournal() {
           e.entries.slice(0, -1).reverse().forEach(function(en) {
             html += '<div class="journal-entry-item">' +
               (en.ts ? '<div class="journal-entry-item-time">' + formatEntryTime(en.ts) + '</div>' : '') +
-              '<div class="journal-entry-item-text">' + escapeHtml(en.t) + '</div></div>';
+              '<div class="journal-entry-item-text">' + linkifyText(en.t) + '</div></div>';
           });
           html += '</div>';
         }
@@ -1984,7 +2008,7 @@ function renderModal(key) {
     modalEntries.slice().reverse().forEach(function(en) {
       html += '<div class="journal-entry-item">' +
         (en.ts ? '<div class="journal-entry-item-time">' + formatEntryTime(en.ts) + '</div>' : '') +
-        '<div class="journal-entry-item-text">' + escapeHtml(en.t) + '</div></div>';
+        '<div class="journal-entry-item-text">' + linkifyText(en.t) + '</div></div>';
     });
     html += '</div>';
   }
